@@ -1,0 +1,10 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "target": "esnext",
+    "module": "ES6",
+    "noEmit": false,
+    "outDir": "dist/esm",
+    "sourceMap": true
+  }
+}
