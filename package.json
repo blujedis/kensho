@@ -4,14 +4,14 @@
   "private": true,
   "workspaces": [
     "apps/*",
-    "config/*",
+    "configs/*",
     "packages/*"
   ],
   "scripts": {
     "build": "turbo run build",
     "dev": "turbo run dev --parallel",
-    "dev:next": "turbo run dev --filter=next",
-    "dev:svelte": "turbo run dev --filter=svelte",
+    "dev:svelte": "turbo run dev --filter={svelte,adapter-svelte,form,validator} --parallel",
+    "build:svelte": "turbo run build --filter={svelte,adapter-svelte,form,validator",
     "lint": "turbo run lint",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
     "prepare": "husky install"
@@ -19,7 +19,7 @@
   "devDependencies": {
     "@commitlint/cli": "^17.0.2",
     "@commitlint/config-conventional": "^17.0.2",
-    "eslint-config-next": "workspace:*",
+    "eslint-config-root": "workspace:*",
     "husky": "^8.0.1",
     "prettier": "latest",
     "turbo": "latest"

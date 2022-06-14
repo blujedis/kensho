@@ -1,0 +1,35 @@
+import type { FormElementConfig, FormElementValue } from './types';
+import { noop } from './utils';
+export declare const TYPE_MAP: {
+    text: (typeof setInputValue)[];
+    email: (typeof setInputValue)[];
+    tel: (typeof setInputValue)[];
+    'select-one': (typeof setSelectValue)[];
+    'select-multiple': (typeof setSelectValue)[];
+    checkbox: (typeof setCheckboxValue)[];
+    password: (typeof setInputValue)[];
+    textarea: (typeof setInputValue)[];
+    radio: (typeof setRadioValue)[];
+    color: (typeof setInputValue)[];
+    date: (typeof setInputValue)[];
+    'datetime-local': (typeof setInputValue)[];
+    file: (typeof getFileValue | typeof noop)[];
+    hidden: (typeof setInputValue)[];
+    month: (typeof setInputValue)[];
+    number: (typeof setInputValue)[];
+    range: (typeof setInputValue)[];
+    time: (typeof setInputValue)[];
+    url: (typeof setInputValue)[];
+    week: (typeof setInputValue)[];
+};
+export declare const TYPES: string[];
+export declare function setInputValue(conf: FormElementConfig, value: FormElementValue): void;
+export declare function setSelectValue(conf: FormElementConfig, value: FormElementValue | FormElementValue[]): void;
+export declare function setCheckboxValue(conf: FormElementConfig, value: FormElementValue): void;
+export declare function setRadioValue(conf: FormElementConfig, value: FormElementValue): void;
+export declare function getInputValue(conf: FormElementConfig): import("./types").FormDataValue | import("./types").FormDataValue[];
+export declare function getCheckboxValue(conf: FormElementConfig): import("./types").FormDataValue | import("./types").FormDataValue[];
+export declare function getRadioValue(conf: FormElementConfig): string | undefined;
+export declare function getSelectValue(conf: FormElementConfig): string | string[];
+export declare function getFileValue(conf: FormElementConfig): File[];
+//# sourceMappingURL=getset.d.ts.map

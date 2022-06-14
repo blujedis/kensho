@@ -1,4 +1,7 @@
 module.exports = {
   root: true,
-  extends: ["root"]
+  extends: ["root"],
+  ignorePatterns: [
+    "configs/**"
+  ]
 };

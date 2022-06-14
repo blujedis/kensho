@@ -6,8 +6,9 @@
 		"resolveJsonModule": true,
 		"sourceMap": true,
 		"esModuleInterop": true,
-		"forceConsistentCasingInFileNames": true,
+		"forceConsistentCasingInFileNames": false,
 		"skipLibCheck": true,
-		"strict": true
+		"strict": true,
+		"moduleResolution": "node"
 	}
 }

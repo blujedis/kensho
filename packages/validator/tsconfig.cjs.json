@@ -2,9 +2,7 @@
   "extends": "./tsconfig.json",
   "compilerOptions": {
     "target": "esnext",
-    "module": "commonjs",
-    "noEmit": false,
-    "outDir": "dist/cjs",
-    "sourceMap": true
+    "module": "esnext",
+    "outDir": "dist/cjs"
   }
 }

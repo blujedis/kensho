@@ -1,16 +1,31 @@
 {
   "name": "@kensho/validator",
-  "version": "0.0.0.",
+  "version": "0.0.0",
   "description": "HTMl centric form validation library.",
+  "cdn": "dist/index.umd.js",
+  "main": "dist/index.js",
+  "types": "dist/types/index.d.ts",
+  "unpkg": "dist/index.umd.js",
+  "module": "dist/index.esm.js",
+  "jsdelivr": "dist/index.umd.js",
+  "umd:main": "dist/index.umd.js",
   "exports": {
-    "require": "./dist/cjs/index.js",
-    "import": "./dist/esm/index.js"
+    ".": [
+      {
+        "import": "./dist/index.mjs",
+        "require": "./dist/index.cjs",
+        "default": "./dist/index.js"
+      },
+      "./dist/index.js"
+    ]
   },
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "clean": "rimraf ./dist",
-    "build:ts": "tsc -p tsconfig.cjs.json && tsc -p tsconfig.esm.json",
-    "build": "npm run clean && npm run build:ts",
-    "dev": "tsc -b -w",
+    "build": "npm run clean && rollup --config ./rollup.config.js",
+    "dev": "rollup --config ./rollup.config.js",
     "lint": "eslint *.ts*"
   },
   "author": {
@@ -20,15 +35,18 @@
   "dependencies": {
     "lodash.get": "^4.4.2",
     "lodash.has": "^4.5.2",
-    "lodash.set": "^4.3.2",
-    "rimraf": "^3.0.2"
+    "lodash.set": "^4.3.2"
   },
   "devDependencies": {
+    "rimraf": "^3.0.2",
     "@types/lodash.get": "^4.4.7",
     "@types/lodash.has": "^4.5.7",
     "@types/lodash.set": "^4.3.7",
     "@types/node": "17.0.41",
+    "eslint-config-root": "workspace:*",
     "tsconfig": "workspace:*",
-    "typescript": "^4.8.0-dev.20220610"
+    "typescript": "^4.8.0-dev.20220610",
+    "rollup-config-default": "workspace:*",
+    "rollup": "^2.75.6"
   }
 }
