@@ -23,13 +23,62 @@ export declare const TYPE_MAP: {
     week: (typeof setInputValue)[];
 };
 export declare const TYPES: string[];
+/**
+ * Sets the value for an input type element.
+ *
+ * @param conf the element configuration object.
+ * @param value the value to be set to the input.
+ */
 export declare function setInputValue(conf: FormElementConfig, value: FormElementValue): void;
-export declare function setSelectValue(conf: FormElementConfig, value: FormElementValue | FormElementValue[]): void;
+/**
+ * Sets the value for a checkbox type element.
+ *
+ * @param conf the element configuration object.
+ * @param value the value indicating if the component is checked.
+ */
 export declare function setCheckboxValue(conf: FormElementConfig, value: FormElementValue): void;
+/**
+ * Sets the value for a radio type element.
+ *
+ * @param conf the element configuration object.
+ * @param value the value when matched element is set to checked.
+ */
 export declare function setRadioValue(conf: FormElementConfig, value: FormElementValue): void;
-export declare function getInputValue(conf: FormElementConfig): import("./types").FormDataValue | import("./types").FormDataValue[];
-export declare function getCheckboxValue(conf: FormElementConfig): import("./types").FormDataValue | import("./types").FormDataValue[];
+/**
+ * Sets the value for a select or multiple select.
+ *
+ * @param conf the element configuration object.
+ * @param value the value or values that are to be selected.
+ */
+export declare function setSelectValue(conf: FormElementConfig, value: FormElementValue): void;
+/**
+ * Gets the value of an input element.
+ *
+ * @param conf the element configuration object.
+ */
+export declare function getInputValue(conf: FormElementConfig): boolean | FormElementValue;
+/**
+ * Gets the value of a checkbox element.
+ *
+ * @param conf the element configuration object.
+ */
+export declare function getCheckboxValue(conf: FormElementConfig): boolean;
+/**
+ * Gets the value of a radio element.
+ *
+ * @param conf the element configuration object.
+ */
 export declare function getRadioValue(conf: FormElementConfig): string | undefined;
+/**
+ * Gets the value or values for a select element.
+ *
+ * @param conf the element configuration object.
+ */
 export declare function getSelectValue(conf: FormElementConfig): string | string[];
+/**
+ * Gets the value/File or Files of an input File element.
+ *
+ * @param conf the element configuration object.
+ */
 export declare function getFileValue(conf: FormElementConfig): File[];
 //# sourceMappingURL=getset.d.ts.map

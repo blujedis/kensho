@@ -10,7 +10,9 @@
   "scripts": {
     "build": "turbo run build",
     "dev": "turbo run dev --parallel",
+    "dev:next": "turbo run dev --filter={next,adapter-react,form,validator} --parallel",
     "dev:svelte": "turbo run dev --filter={svelte,adapter-svelte,form,validator} --parallel",
+    "build:next": "turbo run build --filter={next,adapter-react,form,validator",
     "build:svelte": "turbo run build --filter={svelte,adapter-svelte,form,validator",
     "lint": "turbo run lint",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",

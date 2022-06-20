@@ -1,3 +1,3 @@
-import { createAdapter } from './adapter';
-export default createAdapter;
+import { useKensho } from './adapter';
+export default useKensho;
 //# sourceMappingURL=index.d.ts.map

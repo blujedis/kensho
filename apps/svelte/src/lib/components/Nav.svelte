@@ -1,14 +1,24 @@
 <script lang="ts">
 	import { page } from '$app/stores';
-	import routes from '$lib/utils/routes';
+	import routing from '$lib/utils/routing';
 
-	const linkDefault = `border-b-2 border-transparent hover:text-gray-800 transition-colors duration-200 transform dark:hover:text-gray-200 hover:border-indigo-500 mx-1.5 sm:mx-6`;
+	const routes = routing.getMenu('main', true);
 
-	const linkActive = `text-gray-800 transition-colors duration-200 transform dark:text-gray-100 border-b-2 border-indigo-500 mx-1.5 sm:mx-6`;
+	const common = `p-4 lg:p-0 border-b-2 transition-colors duration-200 transform`;
 
-	const isActive = (path: string) => $page.url.pathname === path;
+	const linkDefault =
+		`border-transparent hover:border-indigo-500 text-gray-600 hover:text-gray-800 dark:text-gray-300/90 dark:hover:text-gray-100 ` +
+		common;
+
+	const linkActive = `text-gray-800 dark:text-gray-100 border-indigo-500 ` + common;
+
+	const isActive = (path: string) => {
+		return $page.url.pathname === path;
+	};
 </script>
 
 {#each routes as route, i}
-	<a class={isActive(route.href) ? linkActive : linkDefault} href={route.href}>{route.name}</a>
+	<a class={isActive(route.href) ? linkActive : linkDefault} href={route.href}>
+		{route.label}
+	</a>
 {/each}

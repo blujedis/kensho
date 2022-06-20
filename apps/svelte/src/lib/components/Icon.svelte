@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { classNames, stlyeNames } from '$lib/utils/helpers';
+	import { loop_guard } from 'svelte/internal';
 	export let inline = true;
 	export let color = '';
 	export let size = 'sm' as

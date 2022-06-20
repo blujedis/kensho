@@ -5,5 +5,8 @@ module.exports = {
     "no-unused-vars": "off",
     '@typescript-eslint/no-unused-vars': ['warn', { args: 'after-used', argsIgnorePattern: '^_', ignoreRestSiblings: true }],
     '@typescript-eslint/no-explicit-any': 'off',
-  }
+  },
+  env: {
+    node: true
+  },
 };

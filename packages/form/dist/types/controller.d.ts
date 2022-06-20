@@ -1,24 +1,53 @@
-import type { FormDataValue, FormElement, FormOptions, Path, KeyOfAny, FormField, NativeValidatorAttributes, ErrorState, SubscribeState } from './types';
-export declare function useKensho<T extends Record<string, unknown>, F extends boolean = false>(options: FormOptions<T, F>): {
-    form: (f: HTMLFormElement | null) => {
+import type { FormElement, FormElementValue, FormOptions, Path, KeyOfAny, FormField, NativeValidatorAttributes, ErrorState, SubscribeState } from './types';
+/**
+ * Creates the Kensho form controller context for managing HTML forms.
+ *
+ * @example
+ * <script>
+ *    const form = document.getElementById('myform');
+ *    const { register } = createController({ options... });
+ *    register(form);
+ * </script>
+ * <form id="myform">
+ *    <input type="text" name="firstname" />
+ * </form>
+ *
+ * @param options form controller options for creating the Kensho form controller.
+ */
+export declare function createController<T extends Record<string, unknown>, F extends boolean = false>(options: FormOptions<T & {
+    [key: string]: unknown;
+}, F>): {
+    form: null;
+    register: (f: HTMLFormElement | null) => {
         destroy: () => void;
     };
     field: {
-        <E extends FormElement>(name: KeyOfAny<Path<T>>, index: number): FormField<E[]>;
-        <E_1 extends FormElement>(name: KeyOfAny<Path<T>>): FormField<E_1>;
+        (name: KeyOfAny<Path<T>>, value?: FormElementValue): FormField;
+        (element: Partial<FormElement>): FormField;
     };
-    reset: <U extends Record<string, unknown>>(values?: U | undefined) => Promise<void>;
-    getValue: (name: KeyOfAny<Path<T>>, transform?: boolean) => FormDataValue | FormDataValue[];
-    getValues: {
-        (flat: boolean): Record<KeyOfAny<Path<T>>, FormDataValue>;
-        (): Required<T>;
+    getValue: (name: KeyOfAny<Path<T>>, cast?: boolean | import("./types").CoerceHandler | undefined) => FormElementValue;
+    getValues: (canTransform?: boolean) => Required<T & {
+        [key: string]: unknown;
+    }>;
+    setValue: (name: KeyOfAny<Path<T>>, value: FormElementValue) => void;
+    setValues: <U extends Record<string, unknown>>(values: U) => void;
+    validate: {
+        <U_1 extends Record<string, unknown>>(values: U_1): Promise<ErrorState<T & {
+            [key: string]: unknown;
+        }, F>>;
+        (names?: KeyOfAny<Path<T>> | KeyOfAny<Path<T>>[] | undefined): Promise<ErrorState<T & {
+            [key: string]: unknown;
+        }, F>>;
     };
-    setValue: (name: KeyOfAny<Path<T>>, value: FormDataValue | FormDataValue[]) => void;
-    setValues: <U_1 extends Record<string, unknown>>(values: U_1) => void;
-    getFields: () => Record<KeyOfAny<Path<T>>, FormField<FormElement>>;
-    validate: <U_2 extends Record<string, unknown>>(values?: U_2) => Promise<ErrorState<T, F>>;
-    destroy: () => void;
     getNativeValidators: (name: KeyOfAny<Path<T>>) => NativeValidatorAttributes | NativeValidatorAttributes[];
-    subscribe: (fn: (state: SubscribeState<T, F>) => void) => () => void;
+    reset: <U_2 extends Record<string, unknown> = T & {
+        [key: string]: unknown;
+    }>(values?: U_2 | undefined, replaceDefaults?: boolean) => Promise<void>;
+    submit: (e?: Event) => void;
+    subscribe: (fn: (state: SubscribeState<T & {
+        [key: string]: unknown;
+    }, F>) => void) => () => void;
+    unsubscribe: (fn?: ((...args: any[]) => void) | undefined) => void;
+    destroy: () => void;
 };
 //# sourceMappingURL=controller.d.ts.map

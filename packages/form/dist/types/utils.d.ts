@@ -1,8 +1,8 @@
-import type { DataType, DataTypeBase, FlatMap, FormElement } from './types';
+import type { DataType, DataTypeBase, FormElement } from './types';
 /**
  * Used to convert/cast to data type.
  */
-export declare const DATA_TYPE_MAP: {
+export declare const COERCE_MAP: {
     string: StringConstructor;
     number: NumberConstructor;
     integer: (v: unknown) => unknown;
@@ -42,7 +42,7 @@ export declare function castDataType(dataType: DataType, dataTypeOptions: any[],
  * @param el the element to be parsed for attributes.
  */
 export declare function parseNativeAttributes(el: FormElement): {
-    type: string;
+    type: import("./types").ElementType;
     required: boolean;
     readonly: boolean;
     disabled: boolean;
@@ -58,12 +58,6 @@ export declare function parseNativeAttributes(el: FormElement): {
  */
 export declare function noop(...args: any[]): void;
 /**
- * Generates a cheap unique ID.
- *
- * @param radix the numberic value used to convert to strings.
- */
-export declare function cheapUniq(radix?: number): string;
-/**
  * Recurses a mutated node looking for valid nodes that should be bound to form control.
  * @param node the mutated node.
  * @param validNodes the valid nodes that can be watched for mutation.
@@ -78,19 +72,6 @@ export declare function recurseNode(node: Node, validNodes?: string[], depth?: n
  * @param match the matcher handler for finding valid nodes.
  */
 export declare function createMutationObserver(rootNode: Node, onMutation: (el: Node, type: 'add' | 'remove') => void, validNodes?: string[]): () => void;
-/**
- * Ensures handlers are an array.
- *
- * @param value converts value to an array of values or empty array.
- */
-export declare function ensureArray<T = any>(value: T | T[]): T[];
-/**
- * Converts nested object to flat map with not notated keys.
- *
- * @param obj the object to be flattened.
- * @param sep the path separator for keys.
- */
-export declare function toFlatMap<T extends Record<string, unknown>>(obj: T, sep?: string): FlatMap<T>;
 /**
  * Debounces a function ensuring the function is not endlessly executed.
  *

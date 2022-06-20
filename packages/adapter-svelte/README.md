@@ -1,0 +1,1 @@
+# Kensho Svelte Adapter

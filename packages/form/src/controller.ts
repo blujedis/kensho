@@ -1,121 +1,150 @@
-
-import getProperty from 'lodash.get';
-import setProperty from 'lodash.set';
-import hasProperty from 'lodash.has';
-import { cheapUniq, createMutationObserver, ensureArray, parseNativeAttributes, toFlatMap, parseDataType, castDataType, canPlaceholder, createPlaceholder } from './utils';
-import type { ElementGetterSetter, ElementType, FormDataValue, FormElement, FormElementValue, FormOptions, DeepPartial, FormState, FieldStateItem, Path, KeyOfAny, FormElementConfig, FormField, NativeValidatorAttributes, ErrorState, FieldState, SubscribeState, DataType } from './types';
+import { createMutationObserver, parseNativeAttributes, parseDataType, castDataType, canPlaceholder, createPlaceholder, } from './utils';
+import { getProperty, setProperty, hasProperty, mergeObject, flattenKeys, ensureArray } from './helpers';
+import type { ElementGetterSetter, ElementType, FormElement, FormElementValue, FormOptions, DeepPartial, FormState, FieldStateItem, Path, KeyOfAny, FormElementConfig, FormField, NativeValidatorAttributes, ErrorState, SubscribeState, FieldStateMap } from './types';
+import { DEFAULT_FORM_STATE } from './constants';
 import { TYPES, TYPE_MAP } from './getset';
 
-const DEFAULT_FORM_STATE = {
-  initialized: false,
-  validating: false,
-  pristine: true,
-  dirty: false,
-  valid: true,
-  invalid: false,
-  submitting: false,
-  submitted: false,
-};
-
-export function useKensho<T extends Record<string, unknown>, F extends boolean = false>(options: FormOptions<T, F>) {
+/**
+ * Creates the Kensho form controller context for managing HTML forms.
+ * 
+ * @example
+ * <script>
+ *    const form = document.getElementById('myform');
+ *    const { register } = createController({ options... });
+ *    register(form);
+ * </script>
+ * <form id="myform">
+ *    <input type="text" name="firstname" />
+ * </form>
+ * 
+ * @param options form controller options for creating the Kensho form controller.
+ */
+export function createController<T extends Record<string, unknown>, F extends boolean = false>(options: FormOptions<T & { [key: string]: unknown }, F>) {
 
   type ElementKey = KeyOfAny<Path<T>>;
+  type Data = T & { [key: string]: unknown };
 
   options = {
-    initValidate: true,
-    flattenOutput: false as F,
-    castValues: true,
+    validateInit: false,
+    validateChange: true,
+    flattenErrors: false as F,
     placeholders: false,
+    mergeUnbound: true,
+    unboundAttribute: 'data-unbound',
+    onCoerce: true,
     ...options
   };
 
-  options.initialValues = { ...options.initialValues } as T;
+  options.initialValues = { ...options.initialValues } as Data;
+  // const initialKeys = flattenKeys(options.initialValues);
 
-  let formEl: HTMLFormElement;
+  // FORM & CHILD ELEMENTS //
 
-  const elements = {} as Record<ElementKey, FormElementConfig>;
+  let _form: HTMLFormElement | null = null;
+  const _elements = {} as Record<ElementKey, FormElementConfig>;
 
-  let unsubscribeMutationObserver: () => void;
+  // FORM, FIELD & ERROR STATES //
 
-  let subscribers = [] as ((state: SubscribeState<T, F>) => void)[];
+  let _formState: FormState = { ...DEFAULT_FORM_STATE };
+  let _fieldState = {} as Record<ElementKey, FieldStateItem>;
+  let _errorState = {} as ErrorState<Data, F>;
 
+  // TEAR DOWN 
 
-  // FORM, FIELD & ERROR STATE //
+  let _unsubscribeMutationObserver: () => void;
+  let _subscribers = [] as ((state: SubscribeState<Data, F>) => void)[];
 
-  let formState: FormState = {
-    ...DEFAULT_FORM_STATE
-  };
-
-  let fieldState = {} as Record<ElementKey, FieldStateItem>;
-
-  let errorState = {} as ErrorState<T, F>;
+  // CONTROLLER CONTEXT
 
   const context = {
-    form,
+    form: _form,
+    register,
     field,
-    reset,
     getValue,
     getValues,
     setValue,
     setValues,
-    getFields,
     validate,
-    destroy,
     getNativeValidators,
-    subscribe
-    // store,
+    reset,
+    submit,
+    subscribe,
+    unsubscribe,
+    destroy,
   };
 
   // STATE SET & REMOVE //
 
-  function getState(): SubscribeState<T, F> {
-    let _fields = fieldState as unknown as FieldState<T, F>;
-    if (!options.flattenOutput)
-      _fields = Object.entries(_fields).reduce((a, [key, val]) => {
-        setProperty(a, key, val);
-        return a;
-      }, {} as any);
+  /**
+   * Gets the form controller's current state.
+   */
+  function getState(): SubscribeState<Data, F> {
+    const _fields = Object.entries(_fieldState).reduce((a, [key, val]) => {
+      setProperty(a, key, val);
+      return a;
+    }, {} as FieldStateMap<Data>);
     return {
-      ...formState,
-      errors: errorState,
+      ..._formState,
+      errors: _errorState,
       fields: _fields
     };
   }
 
-  // function subscribe(fn: (state: SubscribeState<T, F>) => void, withState: boolean): { unsubscribe: () => void, state: SubscribeState<T, F> }
-  // function subscribe(fn: (state: SubscribeState<T, F>) => void): () => void
-  function subscribe(fn: (state: SubscribeState<T, F>) => void) {
-    if (!subscribers.includes(fn))
-      subscribers.push(fn);
-    // if (withState)
-    //   return {
-    //     state: getState(),
-    //     unsubscribe: () => subscribers.filter(s => s !== fn)
-    //   }
+  /**
+   * Subscribes a listener for published state events.
+   * 
+   * @param fn the function to be called when state is published.
+   */
+  function subscribe(fn: (state: SubscribeState<Data, F>) => void) {
+    if (!_subscribers.includes(fn))
+      _subscribers.push(fn);
     return () => {
-      subscribers = subscribers.filter(s => s !== fn);
+      _subscribers = _subscribers.filter(s => s !== fn);
     };
   }
 
-  function updateFormState(newState = formState as Partial<FormState>) {
-    const hasErrors = Object.keys(errorState || {}).length > 0;
-    formState = {
-      ...formState,
+  /**
+   * Unsubscribes listener or unsubscribes all if no listner is provided.
+   * 
+   * @param fn an optional function to unsubscribe.
+   */
+  function unsubscribe(fn?: (...args: any[]) => void) {
+    if (!fn)
+      _subscribers = [];
+    else
+      _subscribers = _subscribers.filter(v => v !== fn);
+  }
+
+  /**
+   * Updates the form controller's state.
+   * 
+   * @param newState the new controller state to be applied.
+   */
+  function updateFormState(newState = {} as Partial<FormState>) {
+    const hasErrors = Object.keys(_errorState || {}).length > 0;
+    _formState = {
+      ..._formState,
       valid: !hasErrors,
       invalid: hasErrors,
       ...newState
     };
-    if (formState.initialized) {
-      for (const pub of subscribers) {
+    if (_formState.initialized) {
+      for (const pub of _subscribers) {
         pub(getState());
       }
     }
   }
 
+  /**
+   * Updates a field's state.
+   * 
+   * @param name  the name of the field to update.
+   * @param newState the new state for the field.
+   */
   function updateFieldState(name: ElementKey, newState: Partial<FieldStateItem>) {
-    const hasErr = hasProperty(errorState, name);
-    fieldState[name] = {
-      ...fieldState[name],
+    const hasErr = hasProperty(_errorState, name);
+    _fieldState[name] = {
+      ..._fieldState[name],
       valid: !hasErr,
       invalid: hasErr,
       ...newState
@@ -123,80 +152,189 @@ export function useKensho<T extends Record<string, unknown>, F extends boolean =
     const { hasDirty, hasTouched } = getDirtyTouched();
     const dirty = hasDirty;
     const pristine = !hasTouched && !hasDirty;
-    updateFormState({ dirty, pristine });
+    updateFormState({ dirty, pristine } as any);
   }
 
+  /**
+   * Removes a field from state.
+   * 
+   * @param name the name of the field to remove from state.
+   */
   function removeFieldState(name: ElementKey) {
-    const { [name]: omit, ...newState } = fieldState;
-    fieldState = newState as typeof fieldState;
+    const { [name]: omit, ...newState } = _fieldState;
+    _fieldState = newState as typeof _fieldState;
     updateFormState();
   }
 
-  function getFields() {
-    return Object.keys(elements).reduce((a, key) => {
-      a[key] = field(key);
-      return a;
-    }, {} as any) as Record<ElementKey, FormField<FormElement>>;
-  }
+  // function getFields() {
+  //   return Object.keys(elements).reduce((a, key) => {
+  //     a[key] = field(key);
+  //     return a;
+  //   }, {} as any) as Record<ElementKey, FormField<FormElement>>;
+  // }
 
   // VALIDATION //
 
-  async function validate<U extends Record<string, unknown>>(values = getValues() as unknown as U) {
-    if (formState.validating)
-      return errorState;
-    const validateHandler = (options.validator || (() => {
-      if (options.validator !== false && !formState.initialized)
+  /**
+   * Gets a normalize validator function warns if not enabled.
+   */
+  function getValidator() {
+    return (options.onValidate || (() => {
+      const hasWindow = typeof window !== 'undefined';
+      const hasWarned = hasWindow && ((window as any).__novalidator__ === 1);
+      if (options.onValidate !== false && !_formState.initialized && !hasWarned) {
         console.warn('Failed to validate, validation handler NOT defined. To suppress this warning set "validator:false"');
+        if (hasWindow) (window as any).__novalidator__ = 1;
+      }
     })) as any;
+  }
+
+  /**
+   * Validates from for all known keys/values.
+   * 
+   * @example
+   * const { validate } = useKensho({ options... });
+   * const result = await validate({ firstName: 'Milton', email: 'bad.email@' });
+   * result = { email: [`Email contains unsupported format.`] };
+   * 
+   * @param values the keys and values to be validated.
+   */
+  async function validate<U extends Record<string, unknown>>(values: U): Promise<ErrorState<Data, F>>;
+
+  /**
+   * Validates from for all known keys/values.
+   * 
+   * @example
+   * const { validate } = useKensho({ options... });
+   * const result = await validate(['firstname', 'email']);
+   * result = { email: [`Email contains unsupported format.`] };
+   * 
+   * @param values the keys and values to be validated.
+   */
+  async function validate(names?: ElementKey | ElementKey[]): Promise<ErrorState<Data, F>>;
+  async function validate<U extends Record<string, unknown>>(namesOrValues?: ElementKey | ElementKey[] | U) {
+
+    if (_formState.validating)
+      return _errorState;
+
+    let names = typeof namesOrValues === 'string' || Array.isArray(namesOrValues) ? typeof namesOrValues === 'string' ? [namesOrValues] : namesOrValues as ElementKey[] : null;
+
+    let values = !Array.isArray(namesOrValues) && namesOrValues !== null && typeof namesOrValues === 'object' ? namesOrValues as U : null;
+
+    const isAllFields = !values;
+
+    values = values || getValues() as U;
+    names = names || flattenKeys(values);
+
+    const validateHandler = getValidator();
     updateFormState({ validating: true });
-    const result = await validateHandler(values) as ErrorState<T, F>;
-    if (options.flattenOutput)
-      errorState = toFlatMap(result || {}) as any; // need to tweak these types.
-    else
-      errorState = result;
-    setTimeout(() => {
-      updateFormState({ validating: false });
-    }, 100);
-    return errorState;
+
+    const result = await validateHandler(values, names, context) as ErrorState<T, F>;
+    const invalid = typeof result !== 'undefined' && result !== null || !!Object.keys(result).length;
+
+    if (!invalid) { // valid set empty state.
+      _errorState = {} as ErrorState<Data, F>;
+    }
+    else if (isAllFields) { // if all fields state is the result.
+      _errorState = result;
+    }
+    else { // filter only proivided field names.
+      _errorState = (names as ElementKey[]).reduce((a, c) => {
+        const errors = getProperty(_errorState as any, c);
+        if (options.flattenErrors && errors)
+          a[c] = errors
+        else if (!options.flattenErrors && errors)
+          setProperty(a, c, errors);
+        return a;
+      }, {} as any);
+    }
+
+    updateFormState({ validating: false, invalid, valid: !invalid });
+    return _errorState;
+
   }
 
   // GET & SET VALUES //
 
-  function getElements() {
-    return Object.keys(elements).reduce((a, c) => (Array.isArray(c) ? [...a, ...c] : [...a, c]), [] as FormElement[])
+  /**
+   * Gets the keys for all known elements/fields.
+   */
+  function getBoundKeys() {
+    return Object.keys(_elements);
   }
 
-  function getValue(name: ElementKey, transform = false): FormDataValue | FormDataValue[] {
-    const conf = elements[name];
+  /**
+   * Merge two arrays of strings.
+   * 
+   * @param target the target array of keys.
+   * @param source additional source array of keys.
+   */
+  // function mergeKeys(target: ElementKey[], source: ElementKey[]) {
+  //   return [...(new Set([...target, ...source]))];
+  // }
+
+  /**
+   * Gets an array of bound elements/fields.
+   */
+  function getElements() {
+    return Object.keys(_elements).reduce((a, c) => (Array.isArray(c) ? [...a, ...c] : [...a, c]), [] as FormElement[])
+  }
+
+  /**
+   * Gets the value of an element bound or virtual.
+   * 
+   * @param name the name of the element to get value for.
+   * @param cast when true or function is provided use to coerce the value.
+   */
+  function getValue(name: ElementKey, cast = options.onCoerce): FormElementValue {
+    const conf = _elements[name];
     if (!conf) return undefined;
     const handlers = TYPE_MAP[conf.type as keyof typeof TYPE_MAP] as ElementGetterSetter;
     let val = handlers[0](conf);
-    if (options.castValues)
-      val = castDataType(conf.dataType, conf.dataTypeOptions, val);
+    if (cast) {
+      if (cast === true)
+        val = castDataType(conf.dataType, conf.dataTypeOptions, val);
+      else
+        // call user defined data cast method.
+        val = cast(name as string, val, { dataType: conf.dataType, dataTypeOptions: conf.dataTypeOptions });
+    }
+    val = typeof val === 'undefined' || val === null || val === 'undefined' ? '' : val;
     return val;
   }
 
-  function getValues(flat: boolean): Record<ElementKey, FormDataValue>;
-  function getValues(): Required<T>;
-  function getValues(flat = false) {
-    const obj = {} as any;
-    const keys = Object.keys(elements);
+  /**
+   * Gets values for all elements.
+   * 
+   * @param canTransform when false prevents transform function call (possible future use.)
+   */
+  function getValues(canTransform = true): Required<Data> {
+    let obj = {} as any;
+    const keys = getBoundKeys();
     for (const key of keys) {
+      // don't transform here too many calls if is function.
       const val = getValue(key);
-      if (typeof val !== 'undefined') {
-        if (flat)
-          obj[key as keyof typeof obj] = val;
-        else
-          setProperty(obj, key, val);
-      }
+      if (typeof val !== 'undefined')
+        setProperty(obj, key, val);
     }
+    // some init values may be missing if unbound
+    // should we merge them back into the values?
+    if (options.mergeUnbound) 
+      obj = mergeObject({ ...options.initialValues }, obj);
+    if (typeof options.onTransform === 'function' && canTransform)
+      obj = options.onTransform(obj);
     return obj;
   }
 
-  function setValue(name: ElementKey, value: FormDataValue | FormDataValue[]) {
+  /**
+   * Sets the value for a field.
+   * 
+   * @param name the name of the field to be set.
+   * @param value the value of the field to be set.
+   */
+  function setValue(name: ElementKey, value: FormElementValue) {
     if (typeof value === 'undefined')
       return;
-    const conf = elements[name];
+    const conf = _elements[name];
     if (!conf)
       return;
     const handlers = TYPE_MAP[conf.type as keyof typeof TYPE_MAP] as ElementGetterSetter;
@@ -204,30 +342,80 @@ export function useKensho<T extends Record<string, unknown>, F extends boolean =
     setterHandler(conf, value);
   }
 
+  /**
+   * Sets values for bound and/or virtual fields.
+   * 
+   * @param values an object containing values to be set.
+   */
   function setValues<U extends Record<string, unknown>>(values: U) {
     if (typeof values === 'undefined')
       return;
-    const entries = Object.entries(elements);
+    const entries = Object.entries(_elements);
     if (!entries || !entries.length) return;
     for (const [key,] of entries) {
       const val = getProperty(values, key);
-      setValue(key, val as FormElementValue | FormElementValue[]);
+      setValue(key, val as FormElementValue);
     }
   }
 
+  /**
+   * Gets the default value for known field/element. 
+   * 
+   * @param name the name of the field/element to get default value for.
+   */
   function getDefaultValue(name: ElementKey) {
-    const conf = elements[name];
-    if (!conf) return null;
+    const conf = _elements[name];
+    if (!conf) return undefined;
     return conf.defaultValue;
   }
 
+  /**
+   * Gets all default values both bound elements and virtuals.
+   */
+  function getDefaultValues() {
+    return getBoundKeys().reduce((a, c) => {
+      const conf = _elements[c];
+      setProperty(a, c, conf.defaultValue);
+      return a;
+    }, {} as Record<string, unknown>);
+  }
+
+  /**
+   * Updates the default values for fields/elements, optionally replaces initial values.
+   * 
+   * @param values the values to be updated.
+   * @param replaceInitial when true initial values are replaced.
+   */
+  function updateDefaultValues(values?: Record<string, unknown>, replaceInitial = false) {
+    if (!values) return;
+    if (replaceInitial)
+      options.initialValues = values as Data;
+    // Iterate elements and update default values.
+    for (const [key, val] of Object.entries(_elements)) {
+      let value = getProperty(values, key);
+      if (Array.isArray(value) && val.type !== 'select-multiple') {
+        console.warn(`Element ${key} default value is an Array but is not of type select-multiple. Only the first value will be used.`);
+        value = value[0] || '';
+      }
+      if (val.type === 'select-multiple')
+        value = typeof value === 'undefined' ? [] : !Array.isArray(value) ? [value] : value;
+      _elements[key].defaultValue = value as FormElementValue;
+    }
+  }
+
+  /**
+   * Parses an element for any native validators. This can be helpful when used with
+   * your custom validator function.
+   * 
+   * @param name the name of the element to parse.
+   */
   function getNativeValidators(name: ElementKey): NativeValidatorAttributes | NativeValidatorAttributes[] {
-    const el = elements[name]?.el;
-    if (!el)
+    const el = _elements[name]?.el;
+    if (!el || !(el instanceof HTMLElement))
       return {} as NativeValidatorAttributes;
     if (Array.isArray(el))
       return el.map(v => parseNativeAttributes(v));
-    return parseNativeAttributes(el);
+    return parseNativeAttributes(el)
   }
 
   /**
@@ -236,7 +424,7 @@ export function useKensho<T extends Record<string, unknown>, F extends boolean =
   function getDirtyTouched() {
     let hasDirty = false;
     let hasTouched = false;
-    for (const [, val] of Object.entries(fieldState)) {
+    for (const [, val] of Object.entries(_fieldState)) {
       if (hasDirty && hasTouched) break;
       hasDirty = val.dirty;
       hasTouched = val.touched;
@@ -249,119 +437,262 @@ export function useKensho<T extends Record<string, unknown>, F extends boolean =
 
   // EVENTS //
 
+  /**
+   * Handles field state update when form element is touched.
+   * 
+   * @param e  event handler passed when element is touched.
+   */
   function onTouched(e: Event) {
-    if (formState.submitted) return;
+    if (_formState.submitted) return;
     const el = e.currentTarget as FormElement;
     updateFieldState(el.name, { touched: true });
     el.removeEventListener('click', onTouched);
     el.removeEventListener('touchend', onTouched);
   }
 
-  async function onChange(e: Event) {
-    if (formState.submitted) return;
-    const el = e.currentTarget as FormElement;
-    const value = getValue(el.name);
-    const defaultValue = getDefaultValue(el.name);
+
+  /**
+   * Handles change events updating element value.
+   * 
+   * @param name the name of the field/element to handle change for.
+   * @param value the value to be set from change.
+   */
+  async function onChange(name: ElementKey, value?: FormElementValue): Promise<void>;
+
+  /**
+   * Handles change events when element has changed.
+   * 
+   * @param event change event passed on element changed.
+   */
+  async function onChange(event: Event): Promise<void>;
+  async function onChange(eventOrName: Event | ElementKey, value?: FormElementValue) {
+    if (_formState.submitted) return;
+    let el: FormElement;
+    let name = eventOrName as ElementKey;
+    let isVirtual = false;
+    if (typeof eventOrName !== 'string') {
+      el = (eventOrName as Event).currentTarget as FormElement;
+      name = el.name;
+    }
+    else {
+      const conf = _elements[name];
+      isVirtual = conf.virtual;
+    }
+    value = value || getValue(name);
+    const defaultValue = getDefaultValue(name);
+    if (isVirtual)
+      setValue(name, value);
     if (value !== defaultValue)
-      updateFieldState(el.name, { dirty: true, touched: true, pristine: false });
+      updateFieldState(name, { dirty: true, touched: true, pristine: false, value });
     else if (value === defaultValue)
-      updateFieldState(el.name, { dirty: false, touched: true, pristine: false });
-    await validate();
+      updateFieldState(name, { dirty: false, touched: true, pristine: false });
+    if (options.validateChange)
+      await validate(name);
   }
 
+  /**
+   * Handles form reset.
+   * 
+   * @param e the event provided on form reset.
+   */
   function onReset(e: Event) {
     e.preventDefault();
     reset();
   }
 
-  async function onSubmit(e: SubmitEvent) {
-    e.preventDefault();
-    if (formState.submitting || formState.submitted) return false;
-    updateFormState({ submitting: true });
+  /**
+   * Handles form submit events either by "submit" button or calling submit handler
+   * exposed by the form controller context.
+   * 
+   * @param e the event provided on form submission.
+   */
+  async function onSubmit(e?: SubmitEvent | Event) {
+    if (e)
+      e.preventDefault();
+    // Don't allow submit if already submitting, submitted or is invalid.
+    if (_formState.submitting || _formState.submitted || _formState.invalid) return false;
+    updateFormState({ submitting: true, submitted: false });
     const values = getValues();
-    errorState = await validate(values);
-    errorState = errorState || {};
-    if (Object.keys(errorState).length) {
-      options.onError && options.onError(errorState, context);
+    const errors = await validate();
+    if (_formState.invalid) {
+      options.onError && options.onError(errors, context);
       return false;
     }
     options.onSubmit(values, context);
-    setTimeout(() => {
-      updateFormState({ submitting: false, submitted: true, pristine: false });
-    }, 100);
+    updateFormState({ submitting: false, submitted: true, pristine: false });
     return false;
   }
 
-  async function reset<U extends Record<string, unknown>>(values?: U) {
-    formEl.reset();
-    setValues((values || { ...options.initialValues }) as DeepPartial<T>);
-    errorState = {} as any;
-    updateFormState({ ...DEFAULT_FORM_STATE });
-    await validate();
+  /**
+   * Reset the form using original values or provide new values.
+   * 
+   * @param values optional values to reset form with.
+   * @param replaceDefaults when true the initial values are replaced.
+   */
+  async function reset<U extends Record<string, unknown> = Data>(values?: U, replaceDefaults = false) {
+    if (!_form) return;
+    updateDefaultValues(values, replaceDefaults);
+    _form.reset();
+    const resetData = (!values ? getDefaultValues() : values) as DeepPartial<T>;
+    setValues(resetData);
+    _errorState = {} as any;
+    updateFormState({ ...DEFAULT_FORM_STATE, initialized: true });
+    if (options.validateInit)
+      await validate();
+  }
+
+  function submit(e?: Event) {
+    onSubmit(e);
   }
 
   // INIT & BINDING/UNBINDING //
 
   /**
-   * Gets element getters/setters and validity state.
+   * Gets or creates a form field.
    * 
-   * @param name the name of the field to return. 
-   * @param index optional index for group elements like radio.
+   * @example
+   * const last = field('last_name', 'Waddams');
+   * const mobile = field('phone.mobile', '8885551234');
+   * 
+   * @param name the name of the field to get or create.
+   * @param value the optional default value for the field.
    */
-  function field<E extends FormElement>(name: ElementKey, index: number): FormField<E[]>;
-  function field<E extends FormElement>(name: ElementKey): FormField<E>;
-  function field(name: ElementKey, index?: number) {
+  function field(name: ElementKey, value?: FormElementValue): FormField;
 
-    const baseEl = elements[name]?.el;
-    const hasIndex = typeof index !== 'undefined';
+  /**
+   * Creates a form field by element or a field virtual by configuration.
+   * 
+   * @example
+   * const email = field({ name: 'email', type: 'email' });
+   * 
+   * const ref = useRef<HTMLSelectElement | null>(null);
+   * <select ref={ref} name="state">
+   *    <option value="FL">Florida</option>
+   *    <option value="TX">Texas</option>
+   * </select>
+   * const state = field(ref);
+   * 
+   * @param name the name of the field to get or create.
+   * @param value the optional default value for the field.
+   */
+  function field(element: Partial<FormElement>): FormField;
 
-    if (hasIndex && !Array.isArray(baseEl))
-      throw new Error(`Attempted to index non indexable field "${name as string}".`);
+  function field(nameOrElement: ElementKey | Partial<FormElement>, value?: FormElementValue) {
 
-    const el = hasIndex ? (baseEl as FormElement[])[index] : baseEl;
-    const fs = fieldState[name] || {};
+    let name = '' as ElementKey;
+    let newEl: Partial<FormElement> | undefined;
 
-    return {
-      el,
+    if (!Array.isArray(nameOrElement) && nameOrElement !== null && typeof nameOrElement === 'object') {
+      newEl = nameOrElement;
+      name = newEl.name as string;
+    }
+    else if (typeof value !== 'undefined' && typeof nameOrElement === 'string') {
+      newEl = { name: nameOrElement, type: 'text', value } as Partial<FormElement>;
+      name = nameOrElement;
+    }
+
+    const isElement = typeof window !== 'undefined' && (newEl instanceof Element);
+
+    // No bound config or not an HTMLElement is virtual.
+    if (!_elements[name]) {
+      const defaults = { dataset: {}, type: 'text', virtual: !isElement };
+      newEl = { ...defaults, ...newEl } as Partial<FormElement>;
+      bind(newEl as FormElement);
+    }
+
+    const conf = _elements[name];
+    const el = conf?.el;
+    const fs = _fieldState[name] || {};
+
+    let timeoutId: NodeJS.Timeout;
+
+    const result = {
+      ...fs,
+
+      name,
+
+      /**
+       * Returns the element or elements for the field. Optionally
+       * you can cast the value by type.
+       * 
+       * @example
+       * const el = field('name').element<HTMLInputElement>();
+       * const els = field('radios').element<HTMLInputElement[]>();
+       */
+      element: <M extends FormElement | FormElement[]>() => {
+        return el as M;
+      },
+
+      /**
+       * Gets the fields current value using getter.
+       */
       get value() { return getValue(name); },
-      set value(value: FormDataValue | FormDataValue[]) {
-        if (formState.submitted) return;
-        setValue(name, value);
+
+      /**
+       * Sets the fields current value using setter.
+       * 
+       * @example
+       * const name = field('name');
+       * name.value = 'Milton Waddams';
+       * 
+       * @param value the form element value.
+       */
+      set value(value: FormElementValue) {
+        if (timeoutId) clearTimeout(timeoutId);
+        timeoutId = setTimeout(() => {
+          onChange(name, value);
+        }, 400)
       },
-      get pristine() { return fs.pristine; },
-      get dirty() { return fs.dirty; },
-      get touched() { return fs.touched; },
-      get invalid() { return fs.invalid; },
-      get valid() { return fs.valid; },
+
+      /**
+       * Resets the state for the field and only this field.
+       */
       reset: () => {
-        if (formState.submitted) return;
-        setValue(name, getDefaultValue(name));
-        updateFieldState(name, { dirty: false, touched: false, pristine: true });
+        if (_formState.submitted) return;
+        const value = getDefaultValue(name);
+        setValue(name, value);
+        updateFieldState(name, { dirty: false, touched: false, pristine: true, value });
       },
+
+      /**
+       * Validates only the current field.
+       */
       validate: async () => {
-        if (formState.submitted) return;
-        const obj = { [name]: getValue(name) as any } as DeepPartial<T>;
-        const result = await validate(obj);
+        if (_formState.submitted) return;
+        const result = await validate(name);
         return result[name as keyof typeof result];
-      },
-    } as FormField<FormElement | FormElement[]>;
+      }
+
+    } as FormField;
+
+    return result;
 
   }
 
+  // function normalizeDefaultValue(el: HTMLElement & { name: string, value: any, checked: boolean }) {
+  //   let defaultValue = getProperty(options.initialValues, el.name);
+  //   defaultValue  = typeof defaultValue === 'undefined' ? el.value : defaultValue;
+
+  // }
+
+  /**
+   * Binds a collection of elements to the form controller for management.
+   * 
+   * @param collection the form element collection to be bound to the controller
+   */
   function bind(...collection: FormElement[]) {
 
     for (const el of collection) {
 
-      const isValid = TYPES.includes(el.type);
+      const isValid = TYPES.includes(el?.type);
+      const isUnbound = el.hasAttribute && el.hasAttribute(options.unboundAttribute || 'data-unbound');
 
-      if (!isValid || el.dataset.unbound === '') continue; // must be valid type.
+      // Must be valid type have a name attribute and not be opted out by user.
+      if (!isValid || !el.name || isUnbound) continue;
 
-      if (!el.name) // name is required or user opted out.
-        el.name = cheapUniq();
+      const key = el.name as keyof typeof _elements;
 
-      const key = el.name as keyof typeof elements;
-
-      let defaultValue = getProperty(options.initialValues, key) as FormDataValue | FormDataValue[];
+      let defaultValue = options.defaultGetter(key, el, (options.initialValues || {}) as T);
 
       if (Array.isArray(defaultValue) && el.type !== 'select-multiple') {
         console.warn(`Element ${el.name} default value is an Array but is not of type select-multiple. Only the first value will be used.`);
@@ -372,35 +703,43 @@ export function useKensho<T extends Record<string, unknown>, F extends boolean =
 
       // Radio may have multiple elements.
       if (el.type === 'radio') {
-        elements[key] = elements[key] || {};
-        elements[key].el = ensureArray(elements[key].el);
-        if ((elements[key].el as FormElement[]).includes(el)) continue;
-        (elements[key].el as FormElement[]).push(el);
-        elements[key].type = el.type;
-        elements[key].defaultValue = defaultValue || ((el as HTMLInputElement).checked && el.value) || '';
-        elements[key].virtualValue = undefined;
-        elements[key].dataType = parsedDataType.dataType as DataType;
-        elements[key].dataTypeOptions = parsedDataType.dataTypeOptions;
+        //  _elements[key] = _elements[key] || {};
+        const conf = _elements[key] || {};
+        conf.el = ensureArray(conf.el);
+        if ((conf.el as FormElement[]).includes(el)) continue;
+        (conf.el as FormElement[]).push(el);
+        conf.type = el.type;
+        conf.defaultValue = defaultValue || ((el as HTMLInputElement).checked && el.value) || '';
+        conf.virtualValue = conf.defaultValue;
+        conf.dataType = parsedDataType.dataType;
+        conf.dataTypeOptions = parsedDataType.dataTypeOptions;
+        conf.virtual = el.virtual || false;
+        _elements[key] = conf;
       }
       else {
-        if (typeof elements[key] !== 'undefined') continue;
-        elements[key] = { type: el.type as ElementType, el, defaultValue: defaultValue || el.value, virtualValue: undefined, ...parsedDataType };
+        if (typeof _elements[key] !== 'undefined') continue;
+        const conf = { type: el.type as ElementType, el, defaultValue: defaultValue || el.value, virtualValue: defaultValue || el.value, ...parsedDataType, virtual: el.virtual || false };
+        _elements[key] = conf;
       }
 
-      if (options.placeholders && canPlaceholder(el, options.placeholders) && !el.hasAttribute('placeholder')) {
+      // Can't set placeholder on virtual.
+      if (options.placeholders && canPlaceholder(el, options.placeholders) && !el.hasAttribute('placeholder') && !el.virtual) {
         const placeholder = createPlaceholder(el.name);
         if (placeholder)
           el.setAttribute('placeholder', placeholder);
       }
 
-      el.addEventListener('change', onChange);
-      el.addEventListener('click', onTouched);
-      el.addEventListener('touchend', onTouched);
+      if (!el.virtual) {
+        el.addEventListener('change', onChange);
+        el.addEventListener('click', onTouched);
+        el.addEventListener('touchend', onTouched);
+      }
 
       // Setter determines how to set the value for element type,
       // just pass key and any initial value.
       if (typeof defaultValue !== 'undefined')
-        setValue(key, getProperty(options.initialValues, key as string) as FormElementValue | FormElementValue[]);
+        setValue(key, getProperty(options.initialValues, key as string) as FormElementValue);
+
 
       updateFieldState(key, {
         pristine: true,
@@ -415,62 +754,89 @@ export function useKensho<T extends Record<string, unknown>, F extends boolean =
 
   }
 
+  /**
+   * Unbinds a collection of elements from the form controller.
+   * 
+   * @param collection the collection of elements to be unbound from the form controller.
+   */
   function unbind(...collection: FormElement[]) {
 
     for (const el of collection) {
 
-      const conf = elements[el.name];
+      const conf = _elements[el.name];
       if (!conf) continue;
       // If element key is array filter only 
       // current element. If none left after
       // delete then entire key.
       if (Array.isArray(conf.el)) {
-        elements[el.name].el = conf.el.filter(e => e !== el);
-        const len = (elements[el.name].el as FormElement[]).length;
+        _elements[el.name].el = conf.el.filter(e => e !== el);
+        const len = (_elements[el.name].el as FormElement[]).length;
         if (!len)
-          delete elements[el.name]
+          delete _elements[el.name]
       }
 
       else {
-        delete elements[el.name];
+        delete _elements[el.name];
       }
 
       removeFieldState(el.name);
-      el.removeEventListener('change', onChange);
-      el.removeEventListener('click', onTouched);
-      el.removeEventListener('touchend', onTouched);
+
+      if (!conf.virtual) {
+        el.removeEventListener('change', onChange);
+        el.removeEventListener('click', onTouched);
+        el.removeEventListener('touchend', onTouched);
+      }
 
     }
 
   }
 
+  /**
+   * Destroys the Kensho form controller instance unbinding from form, removing elements.
+   */
   function destroy() {
     unbind(...getElements());
-    if (unsubscribeMutationObserver) unsubscribeMutationObserver();
-    formEl.removeEventListener('submit', onSubmit);
-    formEl.removeEventListener('reset', onReset);
+    if (_unsubscribeMutationObserver) _unsubscribeMutationObserver();
+    if (_form) {
+      _form.removeAttribute('novalidate');
+      _form.removeEventListener('submit', onSubmit);
+      _form.removeEventListener('reset', onReset);
+    }
   }
 
-  async function initForm(f: HTMLFormElement) {
-    bind(...(Array.from(f.elements) as FormElement[]));
-    f.setAttribute('novalidate', 'novalidate');
-    f.addEventListener('submit', onSubmit);
-    f.addEventListener('reset', onReset);
-    formEl = f;
+  /**
+   * Initializes the form binding elements and binding event listeners.
+   * 
+   * @param form the form to be initialized.
+   */
+  async function initForm(form: HTMLFormElement) {
+    _form = form;
+    bind(...(Array.from(form.elements) as FormElement[]));
+    form.setAttribute('novalidate', 'novalidate');
+    form.addEventListener('submit', onSubmit);
+    form.addEventListener('reset', onReset);
     if (options.subscribe)
       subscribe(options.subscribe);
-    if (options.initValidate)
-      await validate(options.initialValues);
-
+    if (options.validateInit)
+      await validate(options.initialValues as Data);
+    else
+      setTimeout(() => {
+        updateFormState({});
+      })
   }
 
-  function form(f: HTMLFormElement | null) {
+  /**
+   * Registers a form with the controller.
+   * 
+   * @param form the form to register
+   */
+  function register(f: HTMLFormElement | null) {
     if (!f) return { destroy };
     initForm(f).then(() => {
       updateFormState({ initialized: true });
     });
-    unsubscribeMutationObserver = createMutationObserver(f, (el, type) => {
-      if (formState.submitted) return;
+    _unsubscribeMutationObserver = createMutationObserver(f, (el, type) => {
+      if (_formState.submitted) return;
       if (type === 'remove')
         unbind(el as FormElement);
       else

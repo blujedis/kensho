@@ -1,0 +1,51 @@
+{
+  "name": "@kensho/adapter-react",
+  "description": "Kensho Form store adapter for Svelte.",
+  "version": "0.0.0",
+  "cdn": "dist/index.umd.js",
+  "main": "dist/index.js",
+  "types": "dist/types/index.d.ts",
+  "unpkg": "dist/index.umd.js",
+  "module": "dist/index.esm.js",
+  "jsdelivr": "dist/index.umd.js",
+  "umd:main": "dist/index.umd.js",
+  "exports": {
+    ".": [
+      {
+        "import": "./dist/index.mjs",
+        "require": "./dist/index.cjs",
+        "default": "./dist/index.js"
+      },
+      "./dist/index.js"
+    ]
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "clean": "rimraf ./dist",
+    "build": "npm run clean && rollup --config ./rollup.config.js",
+    "dev": "rollup --config ./rollup.config.js -w",
+    "lint": "eslint src/*.ts*"
+  },
+  "author": {
+    "name": "Blujedi LLC",
+    "email": "blujedicorp@gmail.com"
+  },
+  "dependencies": {
+    "@kensho/form": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/node": "17.0.41",
+    "@types/react": "17.0.37",
+    "eslint-config-reactlib": "workspace:*",
+    "rimraf": "^3.0.2",
+    "rollup": "^2.75.6",
+    "rollup-config-default": "workspace:*",
+    "tsconfig": "workspace:*",
+    "typescript": "^4.8.0-dev.20220610"
+  },
+  "peerDependencies": {
+    "react": "17.0.2"
+  }
+}

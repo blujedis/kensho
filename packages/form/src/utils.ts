@@ -1,12 +1,13 @@
-import type { DataType, DataTypeBase, FlatMap, FormElement } from './types';
+import type { DataType, DataTypeBase,  FormElement } from './types';
 import { HTML5_PLACEHOLDER_TYPES, MAX_DEPTH, VALID_MUTATION_NODES } from './constants';
+import { ensureArray } from './helpers';
 
 // Data Type Conversion //
 
 /**
  * Used to convert/cast to data type.
  */
-export const DATA_TYPE_MAP = {
+export const COERCE_MAP = {
   string: String,
   number: Number,
   integer: (v: unknown) => {
@@ -37,7 +38,7 @@ export const DATA_TYPE_MAP = {
   boolean: (v: unknown) => /(true|yes|1)/.test(v + '') ? true : false,
   array: (v: unknown, datatype = 'string' as DataTypeBase) => {
     const arr = ensureArray(v);
-    return arr.map((v: any) => DATA_TYPE_MAP[datatype]);
+    return arr.map((v: any) => COERCE_MAP[datatype]);
   },
   none: (v: unknown) => v
 };
@@ -55,7 +56,10 @@ export function parseDefaultType(value: unknown) {
     value = value[0];
     isArray = true;
   }
-  if (typeof value === 'string') {
+  if (typeof value === 'undefined' || value === null) {
+    dataType = 'string';
+  }
+  else if (typeof value === 'string') {
     dataType = 'string';
   }
   else if (typeof value === 'boolean') {
@@ -99,11 +103,11 @@ export function parseDataType(config: string | undefined, defaultValue: unknown)
 export function castDataType(dataType: DataType, dataTypeOptions: any[], value: any) {
   const isArray = dataType.startsWith('[');
   const cleanType = dataType.replace(/([|])/g, '') as DataTypeBase;
-  if (cleanType === 'none' || !DATA_TYPE_MAP[cleanType])
+  if (cleanType === 'none' || !COERCE_MAP[cleanType])
     return value;
   if (isArray)
-    return ensureArray(value).map(v => DATA_TYPE_MAP[cleanType](v, ...dataTypeOptions))
-  return DATA_TYPE_MAP[cleanType](value, ...dataTypeOptions);
+    return ensureArray(value).map(v => COERCE_MAP[cleanType](v, ...dataTypeOptions));
+  return COERCE_MAP[cleanType](value, ...dataTypeOptions);
 }
 
 // Native Validity State //
@@ -167,15 +171,6 @@ function matchNode(node: Node, validNodes = VALID_MUTATION_NODES): boolean {
 }
 
 /**
- * Generates a cheap unique ID.
- *
- * @param radix the numberic value used to convert to strings.
- */
-export function cheapUniq(radix = 16) {
-  return '#' + ((Math.random() * 0xffffff) << 0).toString(radix);
-}
-
-/**
  * Recurses a mutated node looking for valid nodes that should be bound to form control.
  * @param node the mutated node.
  * @param validNodes the valid nodes that can be watched for mutation.
@@ -212,8 +207,9 @@ export function createMutationObserver(
       // added
       for (let a = 0; a < mutations[i].addedNodes.length; ++a) {
         const node = mutations[i].addedNodes[a];
-        if (!matchNode(node, validNodes)) continue;
-        onMutation(node, 'add');
+        const matches = recurseNode(node, validNodes);
+        if (matches && matches.length)
+          matches.forEach(n => onMutation(n, 'add'));
       }
       // removed.
       for (let r = 0; r < mutations[i].removedNodes.length; ++r) {
@@ -231,37 +227,6 @@ export function createMutationObserver(
   return () => observer.disconnect();
 }
 
-/**
- * Ensures handlers are an array.
- *
- * @param value converts value to an array of values or empty array.
- */
-export function ensureArray<T = any>(value: T | T[]): T[] {
-  if (Array.isArray(value) || typeof value === 'undefined' || value === null)
-    return (value || []) as T[];
-  return [value];
-}
-
-/**
- * Converts nested object to flat map with not notated keys.
- * 
- * @param obj the object to be flattened.
- * @param sep the path separator for keys.
- */
-export function toFlatMap<T extends Record<string, unknown>>(obj: T, sep = '.') {
-  const result = {} as FlatMap<T>;
-  const flatten = (o: object, parent?: string) => {
-    for (const [key, val] of Object.entries(o)) {
-      const prop = parent ? `${parent}${sep}${key}` : key;
-      if (val && typeof val === 'object' && !Array.isArray(val))
-        flatten(val, prop);
-      else
-        result[prop as keyof typeof result] = val;
-    }
-    return result;
-  };
-  return flatten(obj);
-}
 
 /**
  * Debounces a function ensuring the function is not endlessly executed.
@@ -313,3 +278,4 @@ export function createPlaceholder(name: string) {
   first = first?.charAt(0).toUpperCase() + first?.slice(1);
   return [first, ...segments].join(' ');
 }
+

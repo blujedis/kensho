@@ -29,20 +29,11 @@
 
 <Head title="Home" description="Kensho Form Controller" />
 
-<svelte:head>
-	<link
-		rel="stylesheet"
-		href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.5.1/styles/github-dark-dimmed.min.css"
-	/>
-	<script
-		src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.5.1/highlight.min.js"></script>
-</svelte:head>
-
-<main class="h-full">
+<div class="h-full">
 	<Header />
-	<div class="container mx-auto relative text-gray-800 dark:text-gray-200">
-		<h1 class="text-3xl font-semibold text-center text-gray-800 capitalize lg:text-4xl mb-8">
-			The Kensho Kitchen Sink
-		</h1>
-	</div>
-</main>
+	<main class="pt-24 overflow-x-hidden overflow-y-auto">
+		<div class="px-4 container mx-auto text-gray-800 dark:text-gray-200">
+			<h1 class="text-3xl font-semibold text-center capitalize lg:text-4xl mb-8">Feedback</h1>
+		</div>
+	</main>
+</div>

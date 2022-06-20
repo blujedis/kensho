@@ -1,0 +1,20 @@
+{
+  "extends": "tsconfig/tslib.json",
+  "compilerOptions": {
+    "lib": [
+      "ES2020",
+      "DOM"
+    ],
+    "declaration": true,
+    "declarationDir": "dist/types",
+    "sourceMap": true,
+    "noEmit": false,
+    "target": "esnext",
+    "module": "ES2020",
+    "outDir": "dist/esm",
+    "moduleResolution": "node"
+  },
+  "include": [
+    "src/**/*.ts"
+  ]
+}

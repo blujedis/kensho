@@ -1,7 +1,7 @@
 import type { TYPE_MAP } from './getset';
 import type { parseNativeAttributes } from './utils';
-import type { useKensho } from './controller';
-import type { HTML5_PLACEHOLDER_TYPES, VALID_MUTATION_NODES } from './constants';
+import type { createController } from './controller';
+// import type { HTML5_PLACEHOLDER_TYPES, VALID_MUTATION_NODES } from './constants';
 /////////////////////////////////////////////////////////////////////////////
 // HELPER TYPES 
 /////////////////////////////////////////////////////////////////////////////
@@ -35,7 +35,7 @@ export type DeepPartial<T> = {
 };
 
 export type FlatMap<T extends Record<string, unknown>> =
-  { [P in Path<T>]: PathValue<T, P> }
+  { [P in Path<T>]: PathValue<T, P> };
 
 export type MapToType<T extends Record<string, unknown>, V = any> = {
   [K in keyof T]: T[K] extends Record<string, unknown> ? MapToType<T[K]> : V extends never ? T[K] : V;
@@ -48,35 +48,34 @@ export type MapToType<T extends Record<string, unknown>, V = any> = {
 
 export type NativeValidators = ReturnType<typeof parseNativeAttributes>;
 
-export type FormContext = ReturnType<typeof useKensho>;
+export type FormContext = ReturnType<typeof createController>;
 
-export type FormElementValue = string | number | boolean | undefined | null;
-
-export type FormDataValue = FormElementValue | File;
+export type FormElementValue = string | number | readonly string[] | undefined;
 
 export type FormElement =
-  | HTMLInputElement
-  | HTMLTextAreaElement
-  | HTMLSelectElement;
+  HTMLElement & { name: string, type: ElementType, value?: FormElementValue, defaultValue?: FormElementValue, defaultChecked?: boolean; virtual?: boolean; checked?: boolean; }
 
-export type ElementType = keyof typeof TYPE_MAP;
+export type ElementType = KeyOfAny<keyof typeof TYPE_MAP>;
 
 export type DataTypeBase = 'string' | 'number' | 'integer' | 'float' | 'bigint' | 'boolean' | 'none';
 
 export type DataType = DataTypeBase | `[${Exclude<DataTypeBase, 'none'>}]`;
 
+export type DataTypeConfig = DataType | `[${Exclude<DataTypeBase, 'none'>}]|${string}`;
+
 export interface FormElementConfig {
   type: ElementType;
   el: FormElement | FormElement[];
-  virtualValue: FormDataValue | FormDataValue[];
-  defaultValue: FormDataValue | FormDataValue[];
+  virtualValue: FormElementValue | boolean;
+  defaultValue: FormElementValue;
   dataType: DataType;
   dataTypeOptions: any[];
+  virtual: boolean;
 }
 
-export type FormElementGetter = (conf: FormElementConfig) => FormDataValue | FormDataValue[];
+export type FormElementGetter = (conf: FormElementConfig) => FormElementValue;
 
-export type FormElementSetter = (conf: FormElementConfig, value: FormElementValue | FormElementValue[]) => void;
+export type FormElementSetter = (conf: FormElementConfig, value: FormElementValue) => void;
 
 export type ElementGetterSetter = [FormElementGetter, FormElementSetter];
 
@@ -104,9 +103,9 @@ export interface FormState {
   submitted: boolean;
 }
 
-export interface Store<T extends Record<string, unknown>, F extends boolean> {
-  set: (this: void, state: SubscribeState<T, F>) => void;
-}
+// export interface Store<T extends Record<string, unknown>, F extends boolean> {
+//   set: (this: void, state: SubscribeState<T, F>) => void;
+// }
 
 export type ErrorStateMap<T extends Record<string, unknown>> = {
   [K in keyof T]: T[K] extends Record<string, unknown> ? ErrorStateMap<T[K]> : string[];
@@ -115,7 +114,7 @@ export type ErrorStateMap<T extends Record<string, unknown>> = {
 export type ErrorState<T extends Record<string, unknown>, F extends boolean> = F extends true ? Record<KeyOfAny<Path<T>>, string[]> : F extends never ? never : ErrorStateMap<T>;
 
 export interface FieldStateItem {
-  value: FormDataValue | FormDataValue[];
+  value: FormElementValue;
   pristine: boolean,
   dirty: boolean,
   valid: boolean,
@@ -123,34 +122,50 @@ export interface FieldStateItem {
   touched: boolean;
 }
 
+export interface FormField extends FieldStateItem {
+  name: string;
+  el?: HTMLElement | HTMLElement[];
+  reset: () => void;
+  validate: () => Promise<string[] | null | undefined>;
+}
+
 export type FieldStateMap<T extends Record<string, unknown>> = {
   [K in keyof T]: T[K] extends Record<string, unknown> ? FieldStateMap<T[K]> : FieldStateItem;
 }
 
-export type FieldState<T extends Record<string, unknown>, F extends boolean> =
-  F extends true ? Record<KeyOfAny<Path<T>>, FieldStateItem> : F extends never ? never : FieldStateMap<T>;
-
-export interface FormField<E extends FormElement | FormElement[]> extends FieldStateItem {
-  el?: E;
-  reset: () => void;
-  validate: () => Promise<string[]>;
-}
+// export type FieldState<T extends Record<string, unknown>, F extends boolean> =
+//   F extends true ? Record<KeyOfAny<Path<T>>, FieldStateItem> : F extends never ? never : FieldStateMap<T>;
 
 export interface SubscribeState<T extends Record<string, unknown>, F extends boolean = false> extends FormState {
-  fields: FieldState<T, F>;
+  //  FieldState<T & { [key: string]: any }, F>;
+  fields: FieldStateMap<T & { [key: string]: any }>;
   errors: ErrorState<T, F>;
 }
 
+export type TransformHandler<T extends Record<string, unknown>> = (values: T) => Record<string, unknown>;
+
+export type CoerceHandler = (key: string, value: FormElementValue, options: { dataType: any, dataTypeOptions: any[] }) => FormElementValue;
+
+export type AdapterType = 'react' | 'angular' | 'vue' | 'svelte' | 'none';
+
 export interface FormOptions<T extends Record<string, unknown>, F extends boolean = false> {
+  adapter: AdapterType; // none is plain javascript.
+  defaultGetter: <E extends FormElement>(name: KeyOfAny<Path<T>>, el: E, values: T) => any;
   initialValues?: T;
-  flattenOutput?: F;    // default: false
-  initValidate?: boolean; // default: true
-  castValues?: boolean; // default: true
+  flattenErrors?: F;    // default: false
+  validateInit?: boolean; // default: false
+  validateChange?: boolean; // default: true
+  mergeUnbound?: boolean; // default: true 
+  unboundAttribute?: 'data-unbound' | AnyString;
   placeholders?: boolean | (HTMLInputElement | HTMLTextAreaElement)['type'][]; // default: true
   mutationNodes?: HTMLElement['nodeName'][]; //'INPUT', 'SELECT', 'TEXTAREA'
-  transform?: (values: T & { [key: string]: unknown }, context: FormContext) => T & { [key: string]: unknown };
-  validator?: false | ((values: T & { [key: string]: unknown }, context: FormContext) => ErrorState<T, F> | Promise<ErrorState<T, F>>);
-  subscribe?: <U extends Record<string, unknown> = T, X extends boolean = F>(this: void, state: SubscribeState<U, X>) => void;
-  onSubmit: (values: T & { [key: string]: unknown }, context?: FormContext) => void;
+  subscribe?: <U extends Record<string, unknown> = T, Y extends boolean = F>(this: void, state: SubscribeState<U, Y>) => void;
+  onValidate?: false | ((values: T, fields: KeyOfAny<Path<T>>[], context: FormContext) => Partial<ErrorState<T, F>> | undefined | null | Promise<Partial<ErrorState<T, F>> | undefined | null>);
+  onCoerce?: boolean | CoerceHandler; // default: true
+  onTransform?: TransformHandler<T>; // default: undefined.
+  onSubmit: (values: T, context?: FormContext) => void;
   onError?: (errors: ErrorState<T, F>, context?: FormContext) => void;
+  onReset?: (values: T, context?: FormContext) => void;
 }
+
+export type FormAdapterOptions<T extends Record<string, unknown>, F extends boolean = false> = Omit<FormOptions<T, F>, 'adapter' | 'subscribe' | 'defaultGetter'>;

@@ -1,9 +1,10 @@
-
+// const babel = require('rollup-plugin-babel');
 const { terser } = require('rollup-plugin-terser');
 const typescript2 = require('rollup-plugin-typescript2');
 const { nodeResolve } = require('@rollup/plugin-node-resolve');
 const commonjs = require('@rollup/plugin-commonjs');
 const { join } = require('path');
+const peerDepsExternal = require("rollup-plugin-peer-deps-external");
 const cwd = process.cwd();
 const pkg = require(join(cwd, 'package.json'));
 
@@ -99,7 +100,7 @@ const createOptions = (input, options) => {
     ],
 
     plugins: [
-
+      peerDepsExternal({ includeDependencies: false }),
       nodeResolve(),
       commonjs(),
       typescript2({
