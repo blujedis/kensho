@@ -1,5 +1,6 @@
 {
   "name": "rollup-config-default",
+  "version": "0.0.0",
   "description": "Rollup configuration",
   "main": "index.js",
   "dependencies": {
@@ -9,5 +10,8 @@
     "rollup-plugin-peer-deps-external": "^2.2.4",
     "rollup-plugin-terser": "^7.0.2",
     "rollup-plugin-typescript2": "^0.31.1"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }
