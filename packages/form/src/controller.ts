@@ -36,7 +36,6 @@ export function createController<T extends Record<string, unknown>, F extends bo
   };
 
   options.initialValues = { ...options.initialValues } as Data;
-  // const initialKeys = flattenKeys(options.initialValues);
 
   // FORM & CHILD ELEMENTS //
 
@@ -166,13 +165,6 @@ export function createController<T extends Record<string, unknown>, F extends bo
     updateFormState();
   }
 
-  // function getFields() {
-  //   return Object.keys(elements).reduce((a, key) => {
-  //     a[key] = field(key);
-  //     return a;
-  //   }, {} as any) as Record<ElementKey, FormField<FormElement>>;
-  // }
-
   // VALIDATION //
 
   /**
@@ -262,16 +254,6 @@ export function createController<T extends Record<string, unknown>, F extends bo
   function getBoundKeys() {
     return Object.keys(_elements);
   }
-
-  /**
-   * Merge two arrays of strings.
-   * 
-   * @param target the target array of keys.
-   * @param source additional source array of keys.
-   */
-  // function mergeKeys(target: ElementKey[], source: ElementKey[]) {
-  //   return [...(new Set([...target, ...source]))];
-  // }
 
   /**
    * Gets an array of bound elements/fields.
@@ -668,12 +650,6 @@ export function createController<T extends Record<string, unknown>, F extends bo
     return result;
 
   }
-
-  // function normalizeDefaultValue(el: HTMLElement & { name: string, value: any, checked: boolean }) {
-  //   let defaultValue = getProperty(options.initialValues, el.name);
-  //   defaultValue  = typeof defaultValue === 'undefined' ? el.value : defaultValue;
-
-  // }
 
   /**
    * Binds a collection of elements to the form controller for management.

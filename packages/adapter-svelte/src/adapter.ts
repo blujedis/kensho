@@ -1,13 +1,5 @@
 import { type Writable, writable } from 'svelte/store';
-import createController,  { FormAdapterOptions, FormElement, getFirstDefined, getProperty, KeyOfAny, Path, SubscribeState } from '@kensho/form';
-
-// type SubscribeHandler<S> = (state: S) => void;
-
-// export function createAdapter<S>(subscriber: (fn: SubscribeHandler<S>) => () => void): Store<S> {
-//   const store = createStore({} as S);
-//   subscriber(store.set);
-//   return store;
-// }
+import createController,  { FormAdapterOptions, FormElement, getProperty, KeyOfAny, Path, SubscribeState } from '@kensho/form';
 
 interface Store<T> {
   subscribe: Writable<T>['subscribe'],
