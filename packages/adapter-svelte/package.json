@@ -1,7 +1,7 @@
 {
   "name": "@kensho/adapter-svelte",
   "description": "Kensho Form store adapter for Svelte.",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "cdn": "dist/index.umd.js",
   "main": "dist/index.js",
   "types": "dist/types/index.d.ts",
@@ -55,5 +55,8 @@
   },
   "peerDependencies": {
     "svelte": "^3.46.0"
+  },
+  "publishConfig": {
+    "registry": "https://blureg.blujedi.com"
   }
 }

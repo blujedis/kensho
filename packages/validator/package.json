@@ -1,6 +1,6 @@
 {
   "name": "@kensho/validator",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "description": "HTMl centric form validation library.",
   "cdn": "dist/index.umd.js",
   "main": "dist/index.js",
@@ -53,5 +53,9 @@
     "rollup-plugin-typescript2": "^0.31.1",
     "@typescript-eslint/eslint-plugin": "^5.13.0",
     "@typescript-eslint/parser": "^5.0.0"
+  },
+  "publishConfig": {
+    "registry": "https://blureg.blujedi.com"
   }
+
 }
