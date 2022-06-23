@@ -26,7 +26,8 @@
     "clean": "rimraf ./dist",
     "build": "npm run clean && rollup --config ./rollup.config.js",
     "dev": "rollup --config ./rollup.config.js -w",
-    "lint": "eslint src/*.ts*"
+    "lint": "eslint src/*.ts*",
+    "test": "echo \"Warn: no test specified\" && exit 0"
   },
   "author": {
     "name": "Blujedi LLC",
@@ -64,6 +65,7 @@
     "react": "17.0.2"
   },
   "publishConfig": {
+    "access": "public",
     "registry": "https://blureg.blujedi.com"
   }
 }

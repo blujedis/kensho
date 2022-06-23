@@ -24,9 +24,10 @@
   ],
   "scripts": {
     "clean": "rimraf ./dist",
-    "lint": "eslint *.ts*",
+    "lint": "eslint src/*.ts*",
     "build": "npm run clean && rollup --config ./rollup.config.js",
-    "dev": "rollup --config ./rollup.config.js -w"
+    "dev": "rollup --config ./rollup.config.js -w",
+    "test": "echo \"Warn: no test specified\" && exit 0"
   },
   "author": {
     "name": "Blujedi LLC",
@@ -59,6 +60,7 @@
     "@typescript-eslint/parser": "^5.0.0"
   },
   "publishConfig": {
+    "access": "public",
     "registry": "https://blureg.blujedi.com"
   }
 }

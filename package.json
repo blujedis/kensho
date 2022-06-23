@@ -8,20 +8,20 @@
     "packages/*"
   ],
   "scripts": {
-    "build": "turbo run build",
     "dev": "turbo run dev --parallel",
     "dev:next": "turbo run dev --filter={next,adapter-react,form,validator} --parallel",
     "dev:svelte": "turbo run dev --filter={svelte,adapter-svelte,form,validator} --parallel",
     "build:next": "turbo run build --filter={next,adapter-react,form,validator",
     "build:svelte": "turbo run build --filter={svelte,adapter-svelte,form,validator",
+    "build": "turbo run build",
     "lint": "turbo run lint",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
     "prepare": "husky install",
-    "release": "pnpm build && changeset publish"
+    "change": "changeset add",
+    "bump": "changeset version",
+    "release": "pnpm build && changeset publish && git push --follow-tags"
   },
   "devDependencies": {
-    "@commitlint/cli": "^17.0.2",
-    "@commitlint/config-conventional": "^17.0.2",
     "husky": "^8.0.1",
     "prettier": "latest",
     "turbo": "latest",
@@ -30,6 +30,11 @@
   "engines": {
     "npm": ">=7.0.0",
     "node": ">=14.0.0"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "npm run lint && npm format && git add -A ."
+    }
   },
   "packageManager": "pnpm@7.2.0"
 }
