@@ -20,7 +20,7 @@
     "prepare": "husky install",
     "change": "changeset add",
     "bump": "changeset version",
-    "release": "npm run build && changeset publish",
+    "release": "changeset publish",
     "pushtags": "git push --follow-tags"
   },
   "devDependencies": {
