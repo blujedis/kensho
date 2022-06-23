@@ -9,7 +9,7 @@
 		email: 'bob@google.com'
 	};
 
-	const { form, store } = useKensho({
+	const { register, store } = useKensho({
 		initialValues,
 		onSubmit(values) {
 			console.log(values);
@@ -41,7 +41,7 @@
 				efficient form controller for use with <a href="https://kit.svelte.dev">SvelteKit</a>.
 			</p>
 
-			<form use:form class="mt-4">
+			<form use:register class="mt-4">
 				<InputField name="name" />
 				<InputField name="email" />
 			</form>

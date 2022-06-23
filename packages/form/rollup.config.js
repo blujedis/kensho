@@ -30,23 +30,16 @@ const options = {
 
   input: './src/index.ts',
 
-  external: [
-    'react',
-    'react-dom',
-  ],
-
   output: [
     {
       ...common,
       file: './dist/index.js',
       format: 'commonjs',
-      globals: { react: 'React', 'react-dom': 'ReactDOM' }
     },
     {
       ...common,
       file: './dist/index.cjs',
       format: 'commonjs',
-      globals: { react: 'React', 'react-dom': 'ReactDOM' }
     },
     {
       ...common,
@@ -62,13 +55,11 @@ const options = {
       ...common,
       file: './dist/index.umd.js',
       format: 'umd',
-      globals: { react: 'React', 'react-dom': 'ReactDOM' }
     },
     {
       ...common,
       file: './dist/index.umd.min.js',
       format: 'umd',
-      globals: { react: 'React', 'react-dom': 'ReactDOM' },
       plugins: [terser()],
     },
 

@@ -1,5 +1,5 @@
 /*!
- * @kensho/adapter-react v0.0.0
+ * @kensho/adapter-react v0.0.2
  * (c) Blujedi LLC
  * Released under the MIT License.
  */
@@ -11,14 +11,27 @@
 })(this, (function (exports, react) { 'use strict';
 
   /*!
-   * @kensho/form v0.0.0
+   * @kensho/form v0.0.2
    * (c) Blujedi LLC
    * Released under the MIT License.
    */
 
-  const VALID_MUTATION_NODES = ['INPUT', 'SELECT', 'TEXTAREA'];
+  const VALID_MUTATION_NODES = [
+      'INPUT',
+      'SELECT',
+      'TEXTAREA'
+  ];
   const MAX_DEPTH = 20; // if you are nesting more than this you're doing it wrong.
-  const HTML5_INPUT_TYPES = ['email', 'number', 'date', 'datetime-local', 'time', 'url', 'tel', 'color'];
+  const HTML5_INPUT_TYPES = [
+      'email',
+      'number',
+      'date',
+      'datetime-local',
+      'time',
+      'url',
+      'tel',
+      'color'
+  ];
   const HTML5_PLACEHOLDER_TYPES = [...HTML5_INPUT_TYPES, 'textarea'];
   const DEFAULT_FORM_STATE = {
       initialized: false,
@@ -28,7 +41,7 @@
       valid: true,
       invalid: false,
       submitting: false,
-      submitted: false,
+      submitted: false
   };
 
   var commonjsGlobal = typeof globalThis !== 'undefined' ? globalThis : typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {};
@@ -5070,7 +5083,10 @@
       const flatten = (o, parent) => {
           for (const [key, val] of Object.entries(o)) {
               const prop = parent ? `${parent}${sep}${key}` : key;
-              if (typeof val !== 'undefined' && val !== null && !Array.isArray(val) && typeof val === 'object')
+              if (typeof val !== 'undefined' &&
+                  val !== null &&
+                  !Array.isArray(val) &&
+                  typeof val === 'object')
                   flatten(val, prop);
               else
                   result[prop] = val;
@@ -5098,7 +5114,10 @@
       const flatten = (o, parent) => {
           for (const [key, val] of Object.entries(o)) {
               const path = parent ? `${parent}${sep}${key}` : key;
-              if (typeof val !== 'undefined' && val !== null && !Array.isArray(val) && typeof val === 'object')
+              if (typeof val !== 'undefined' &&
+                  val !== null &&
+                  !Array.isArray(val) &&
+                  typeof val === 'object')
                   flatten(val, path);
               else
                   result.push(path);
@@ -5171,10 +5190,10 @@
               return v;
           }
       },
-      boolean: (v) => /(true|yes|1)/.test(v + '') ? true : false,
+      boolean: (v) => (/(true|yes|1)/.test(v + '') ? true : false),
       array: (v, datatype = 'string') => {
           const arr = ensureArray(v);
-          return arr.map((v) => COERCE_MAP[datatype]);
+          return arr.map((v) => COERCE_MAP[datatype](v));
       },
       none: (v) => v
   };
@@ -5240,7 +5259,7 @@
       if (cleanType === 'none' || !COERCE_MAP[cleanType])
           return value;
       if (isArray)
-          return ensureArray(value).map(v => COERCE_MAP[cleanType](v, ...dataTypeOptions));
+          return ensureArray(value).map((v) => COERCE_MAP[cleanType](v, ...dataTypeOptions));
       return COERCE_MAP[cleanType](value, ...dataTypeOptions);
   }
   // Native Validity State //
@@ -5272,7 +5291,7 @@
           max: el.getAttribute('min'),
           minlength: el.getAttribute('min'),
           maxlength: el.getAttribute('min'),
-          step: el.getAttribute('min'),
+          step: el.getAttribute('min')
       };
       attrs.min = attrs.min !== null ? parseInt(attrs.min + '') : null;
       attrs.max = attrs.max !== null ? parseInt(attrs.max + '') : null;
@@ -5285,7 +5304,7 @@
    * Non operation function.
    */
   // eslint-disable-next-line @typescript-eslint/no-empty-function
-  function noop(...args) { }
+  function noop(..._args) { }
   /**
    * Inspects a node checking to see if should be watched on mutation.
    *
@@ -5308,7 +5327,7 @@
           return matches;
       if (node.childNodes) {
           const childNodes = Array.from(node.childNodes).reduce((a, n) => {
-              a = [...a, ...recurseNode(n, validNodes, depth = 1)];
+              a = [...a, ...recurseNode(n, validNodes, (depth = 1))];
               return a;
           }, []);
           matches = [...matches, ...childNodes];
@@ -5330,14 +5349,14 @@
                   const node = mutations[i].addedNodes[a];
                   const matches = recurseNode(node, validNodes);
                   if (matches && matches.length)
-                      matches.forEach(n => onMutation(n, 'add'));
+                      matches.forEach((n) => onMutation(n, 'add'));
               }
               // removed.
               for (let r = 0; r < mutations[i].removedNodes.length; ++r) {
                   const node = mutations[i].removedNodes[r];
                   const matches = recurseNode(node, validNodes);
                   if (matches.length)
-                      matches.forEach(n => onMutation(n, 'remove'));
+                      matches.forEach((n) => onMutation(n, 'remove'));
               }
           }
       });
@@ -5357,7 +5376,11 @@
       console.log('placeholder types:', validTypes);
       if (validTypes === false)
           return false;
-      const types = !validTypes ? HTML5_PLACEHOLDER_TYPES : validTypes === true ? HTML5_PLACEHOLDER_TYPES : validTypes;
+      const types = !validTypes
+          ? HTML5_PLACEHOLDER_TYPES
+          : validTypes === true
+              ? HTML5_PLACEHOLDER_TYPES
+              : validTypes;
       return types.includes(el.type);
   }
   /**
@@ -5375,26 +5398,26 @@
   }
 
   const TYPE_MAP = {
-      'text': [getInputValue, setInputValue],
-      'email': [getInputValue, setInputValue],
-      'tel': [getInputValue, setInputValue],
+      text: [getInputValue, setInputValue],
+      email: [getInputValue, setInputValue],
+      tel: [getInputValue, setInputValue],
       'select-one': [getSelectValue, setSelectValue],
       'select-multiple': [getSelectValue, setSelectValue],
-      'checkbox': [getCheckboxValue, setCheckboxValue],
-      'password': [getInputValue, setInputValue],
-      'textarea': [getInputValue, setInputValue],
-      'radio': [getRadioValue, setRadioValue],
-      'color': [getInputValue, setInputValue],
-      'date': [getInputValue, setInputValue],
+      checkbox: [getCheckboxValue, setCheckboxValue],
+      password: [getInputValue, setInputValue],
+      textarea: [getInputValue, setInputValue],
+      radio: [getRadioValue, setRadioValue],
+      color: [getInputValue, setInputValue],
+      date: [getInputValue, setInputValue],
       'datetime-local': [getInputValue, setInputValue],
-      'file': [getFileValue, noop],
-      'hidden': [getInputValue, setInputValue],
-      'month': [getInputValue, setInputValue],
-      'number': [getInputValue, setInputValue],
-      'range': [getInputValue, setInputValue],
-      'time': [getInputValue, setInputValue],
-      'url': [getInputValue, setInputValue],
-      'week': [getInputValue, setInputValue],
+      file: [getFileValue, noop],
+      hidden: [getInputValue, setInputValue],
+      month: [getInputValue, setInputValue],
+      number: [getInputValue, setInputValue],
+      range: [getInputValue, setInputValue],
+      time: [getInputValue, setInputValue],
+      url: [getInputValue, setInputValue],
+      week: [getInputValue, setInputValue]
   };
   const TYPES = Object.keys(TYPE_MAP);
   /**
@@ -5438,7 +5461,7 @@
           conf.virtualValue = value;
       }
       else {
-          el.forEach(e => {
+          el.forEach((e) => {
               if (e.value === value)
                   e.setAttribute('checked', 'true');
           });
@@ -5467,10 +5490,11 @@
           }
       }
       if (conf.virtual || !el) {
-          conf.virtualValue = conf.type === 'select-multiple' ? ensureArray(value) : value;
+          conf.virtualValue =
+              conf.type === 'select-multiple' ? ensureArray(value) : value;
       }
       else {
-          const _values = ensureArray(value).filter(v => v !== null && typeof v !== 'undefined');
+          const _values = ensureArray(value).filter((v) => v !== null && typeof v !== 'undefined');
           if (el.type === 'select-multiple') {
               const children = Array.from(el.children);
               recurseChildren(_values, children);
@@ -5589,7 +5613,7 @@
       let _formState = { ...DEFAULT_FORM_STATE };
       let _fieldState = {};
       let _errorState = {};
-      // TEAR DOWN 
+      // TEAR DOWN
       let _unsubscribeMutationObserver;
       let _subscribers = [];
       // CONTROLLER CONTEXT
@@ -5607,7 +5631,7 @@
           submit,
           subscribe,
           unsubscribe,
-          destroy,
+          destroy
       };
       // STATE SET & REMOVE //
       /**
@@ -5633,7 +5657,7 @@
           if (!_subscribers.includes(fn))
               _subscribers.push(fn);
           return () => {
-              _subscribers = _subscribers.filter(s => s !== fn);
+              _subscribers = _subscribers.filter((s) => s !== fn);
           };
       }
       /**
@@ -5645,7 +5669,7 @@
           if (!fn)
               _subscribers = [];
           else
-              _subscribers = _subscribers.filter(v => v !== fn);
+              _subscribers = _subscribers.filter((v) => v !== fn);
       }
       /**
        * Updates the form controller's state.
@@ -5700,35 +5724,48 @@
        * Gets a normalize validator function warns if not enabled.
        */
       function getValidator() {
-          return (options.onValidate || (() => {
-              const hasWindow = typeof window !== 'undefined';
-              const hasWarned = hasWindow && (window.__novalidator__ === 1);
-              if (options.onValidate !== false && !_formState.initialized && !hasWarned) {
-                  console.warn('Failed to validate, validation handler NOT defined. To suppress this warning set "validator:false"');
-                  if (hasWindow)
-                      window.__novalidator__ = 1;
-              }
-          }));
+          return (options.onValidate ||
+              (() => {
+                  const hasWindow = typeof window !== 'undefined';
+                  const hasWarned = hasWindow && window.__novalidator__ === 1;
+                  if (options.onValidate !== false && !_formState.initialized && !hasWarned) {
+                      console.warn('Failed to validate, validation handler NOT defined. To suppress this warning set "validator:false"');
+                      if (hasWindow)
+                          window.__novalidator__ = 1;
+                  }
+              }));
       }
       async function validate(namesOrValues) {
           if (_formState.validating)
               return _errorState;
-          let names = typeof namesOrValues === 'string' || Array.isArray(namesOrValues) ? typeof namesOrValues === 'string' ? [namesOrValues] : namesOrValues : null;
-          let values = !Array.isArray(namesOrValues) && namesOrValues !== null && typeof namesOrValues === 'object' ? namesOrValues : null;
+          let names = typeof namesOrValues === 'string' || Array.isArray(namesOrValues)
+              ? typeof namesOrValues === 'string'
+                  ? [namesOrValues]
+                  : namesOrValues
+              : null;
+          let values = !Array.isArray(namesOrValues) &&
+              namesOrValues !== null &&
+              typeof namesOrValues === 'object'
+              ? namesOrValues
+              : null;
           const isAllFields = !values;
           values = values || getValues();
           names = names || flattenKeys(values);
           const validateHandler = getValidator();
           updateFormState({ validating: true });
-          const result = await validateHandler(values, names, context);
-          const invalid = typeof result !== 'undefined' && result !== null || !!Object.keys(result).length;
-          if (!invalid) { // valid set empty state.
+          const result = (await validateHandler(values, names, context));
+          const invalid = (typeof result !== 'undefined' && result !== null) ||
+              !!Object.keys(result).length;
+          if (!invalid) {
+              // valid set empty state.
               _errorState = {};
           }
-          else if (isAllFields) { // if all fields state is the result.
+          else if (isAllFields) {
+              // if all fields state is the result.
               _errorState = result;
           }
-          else { // filter only proivided field names.
+          else {
+              // filter only proivided field names.
               _errorState = names.reduce((a, c) => {
                   const errors = lodash_get(_errorState, c);
                   if (options.flattenErrors && errors)
@@ -5769,11 +5806,15 @@
           if (cast) {
               if (cast === true)
                   val = castDataType(conf.dataType, conf.dataTypeOptions, val);
+              // call user defined data cast method.
               else
-                  // call user defined data cast method.
-                  val = cast(name, val, { dataType: conf.dataType, dataTypeOptions: conf.dataTypeOptions });
+                  val = cast(name, val, {
+                      dataType: conf.dataType,
+                      dataTypeOptions: conf.dataTypeOptions
+                  });
           }
-          val = typeof val === 'undefined' || val === null || val === 'undefined' ? '' : val;
+          val =
+              typeof val === 'undefined' || val === null || val === 'undefined' ? '' : val;
           return val;
       }
       /**
@@ -5825,7 +5866,7 @@
           const entries = Object.entries(_elements);
           if (!entries || !entries.length)
               return;
-          for (const [key,] of entries) {
+          for (const [key] of entries) {
               const val = lodash_get(values, key);
               setValue(key, val);
           }
@@ -5870,7 +5911,12 @@
                   value = value[0] || '';
               }
               if (val.type === 'select-multiple')
-                  value = typeof value === 'undefined' ? [] : !Array.isArray(value) ? [value] : value;
+                  value =
+                      typeof value === 'undefined'
+                          ? []
+                          : !Array.isArray(value)
+                              ? [value]
+                              : value;
               _elements[key].defaultValue = value;
           }
       }
@@ -5885,7 +5931,7 @@
           if (!el || !(el instanceof HTMLElement))
               return {};
           if (Array.isArray(el))
-              return el.map(v => parseNativeAttributes(v));
+              return el.map((v) => parseNativeAttributes(v));
           return parseNativeAttributes(el);
       }
       /**
@@ -5938,7 +5984,12 @@
           if (isVirtual)
               setValue(name, value);
           if (value !== defaultValue)
-              updateFieldState(name, { dirty: true, touched: true, pristine: false, value });
+              updateFieldState(name, {
+                  dirty: true,
+                  touched: true,
+                  pristine: false,
+                  value
+              });
           else if (value === defaultValue)
               updateFieldState(name, { dirty: false, touched: true, pristine: false });
           if (options.validateChange)
@@ -6000,15 +6051,21 @@
       function field(nameOrElement, value) {
           let name = '';
           let newEl;
-          if (!Array.isArray(nameOrElement) && nameOrElement !== null && typeof nameOrElement === 'object') {
+          if (!Array.isArray(nameOrElement) &&
+              nameOrElement !== null &&
+              typeof nameOrElement === 'object') {
               newEl = nameOrElement;
               name = newEl.name;
           }
           else if (typeof value !== 'undefined' && typeof nameOrElement === 'string') {
-              newEl = { name: nameOrElement, type: 'text', value };
+              newEl = {
+                  name: nameOrElement,
+                  type: 'text',
+                  value
+              };
               name = nameOrElement;
           }
-          const isElement = typeof window !== 'undefined' && (newEl instanceof Element);
+          const isElement = typeof window !== 'undefined' && newEl instanceof Element;
           // No bound config or not an HTMLElement is virtual.
           if (!_elements[name]) {
               const defaults = { dataset: {}, type: 'text', virtual: !isElement };
@@ -6036,7 +6093,9 @@
               /**
                * Gets the fields current value using getter.
                */
-              get value() { return getValue(name); },
+              get value() {
+                  return getValue(name);
+              },
               /**
                * Sets the fields current value using setter.
                *
@@ -6061,7 +6120,12 @@
                       return;
                   const value = getDefaultValue(name);
                   setValue(name, value);
-                  updateFieldState(name, { dirty: false, touched: false, pristine: true, value });
+                  updateFieldState(name, {
+                      dirty: false,
+                      touched: false,
+                      pristine: true,
+                      value
+                  });
               },
               /**
                * Validates only the current field.
@@ -6083,7 +6147,8 @@
       function bind(...collection) {
           for (const el of collection) {
               const isValid = TYPES.includes(el?.type);
-              const isUnbound = el.hasAttribute && el.hasAttribute(options.unboundAttribute || 'data-unbound');
+              const isUnbound = el.hasAttribute &&
+                  el.hasAttribute(options.unboundAttribute || 'data-unbound');
               // Must be valid type have a name attribute and not be opted out by user.
               if (!isValid || !el.name || isUnbound)
                   continue;
@@ -6103,7 +6168,8 @@
                       continue;
                   conf.el.push(el);
                   conf.type = el.type;
-                  conf.defaultValue = defaultValue || (el.checked && el.value) || '';
+                  conf.defaultValue =
+                      defaultValue || (el.checked && el.value) || '';
                   conf.virtualValue = conf.defaultValue;
                   conf.dataType = parsedDataType.dataType;
                   conf.dataTypeOptions = parsedDataType.dataTypeOptions;
@@ -6113,11 +6179,21 @@
               else {
                   if (typeof _elements[key] !== 'undefined')
                       continue;
-                  const conf = { type: el.type, el, defaultValue: defaultValue || el.value, virtualValue: defaultValue || el.value, ...parsedDataType, virtual: el.virtual || false };
+                  const conf = {
+                      type: el.type,
+                      el,
+                      defaultValue: defaultValue || el.value,
+                      virtualValue: defaultValue || el.value,
+                      ...parsedDataType,
+                      virtual: el.virtual || false
+                  };
                   _elements[key] = conf;
               }
               // Can't set placeholder on virtual.
-              if (options.placeholders && canPlaceholder(el, options.placeholders) && !el.hasAttribute('placeholder') && !el.virtual) {
+              if (options.placeholders &&
+                  canPlaceholder(el, options.placeholders) &&
+                  !el.hasAttribute('placeholder') &&
+                  !el.virtual) {
                   const placeholder = createPlaceholder(el.name);
                   if (placeholder)
                       el.setAttribute('placeholder', placeholder);
@@ -6151,11 +6227,11 @@
               const conf = _elements[el.name];
               if (!conf)
                   continue;
-              // If element key is array filter only 
+              // If element key is array filter only
               // current element. If none left after
               // delete then entire key.
               if (Array.isArray(conf.el)) {
-                  _elements[el.name].el = conf.el.filter(e => e !== el);
+                  _elements[el.name].el = conf.el.filter((e) => e !== el);
                   const len = _elements[el.name].el.length;
                   if (!len)
                       delete _elements[el.name];
@@ -6253,7 +6329,7 @@
       const defaultDataVal = lodash_get(values, name);
       // It a value was provided in initial values it
       // takes priority over any default set on element.
-      // if data val is empty string allow fallback to 
+      // if data val is empty string allow fallback to
       // default field value if any.
       if (typeof defaultDataVal !== 'undefined' && defaultDataVal !== '')
           return defaultDataVal;
@@ -6288,7 +6364,7 @@
    * @param options form controller options for initialization.
    */
   function useKensho(options) {
-      // Create the store the controller will update 
+      // Create the store the controller will update
       const [store, setStore] = useStateRef({
           ...DEFAULT_FORM_STATE,
           errors: {},

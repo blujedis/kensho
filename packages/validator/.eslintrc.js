@@ -10,4 +10,7 @@ module.exports = {
   env: {
     node: true
   },
+  "ignorePatterns": [
+    "rollup.config.js"
+  ]
 };

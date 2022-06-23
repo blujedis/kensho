@@ -1,1 +1,1 @@
-{"version":3,"file":"useStateRef.d.ts","sourceRoot":"","sources":["../../src/useStateRef.ts"],"names":[],"mappings":"AAEA,QAAA,MAAM,WAAW,6CAQ+B,IAAI,CACnD,CAAC;AAEF,eAAe,WAAW,CAAC"}
+{"version":3,"file":"useStateRef.d.ts","sourceRoot":"","sources":["../../src/useStateRef.ts"],"names":[],"mappings":"AAEA,QAAA,MAAM,WAAW,6CAQ8B,IAAI,CAClD,CAAC;AAEF,eAAe,WAAW,CAAC"}

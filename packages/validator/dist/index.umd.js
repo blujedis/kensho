@@ -1,5 +1,5 @@
 /*!
- * @kensho/validator v0.0.0
+ * @kensho/validator v0.0.2
  * (c) Blujedi LLC
  * Released under the MIT License.
  */
@@ -3028,7 +3028,7 @@
 	/**
 	 * @see https://www.w3resource.com/javascript/form/phone-no-validation.php
 	 */
-	// RFC 2822 standard 
+	// RFC 2822 standard
 	const EXP_EMAIL = /(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])/;
 	// export const EXP_EMAIL =
 	//   /^([^\x00-\x20\x22\x28\x29\x2c\x2e\x3a-\x3c\x3e\x40\x5b-\x5d\x7f-\xff]+|\x22([^\x0d\x22\x5c\x80-\xff]|\x5c[\x00-\x7f])*\x22)(\x2e([^\x00-\x20\x22\x28\x29\x2c\x2e\x3a-\x3c\x3e\x40\x5b-\x5d\x7f-\xff]+|\x22([^\x0d\x22\x5c\x80-\xff]|\x5c[\x00-\x7f])*\x22))*\x40([^\x00-\x20\x22\x28\x29\x2c\x2e\x3a-\x3c\x3e\x40\x5b-\x5d\x7f-\xff]+|\x5b([^\x0d\x5b-\x5d\x80-\xff]|\x5c[\x00-\x7f])*\x5d)(\x2e([^\x00-\x20\x22\x28\x29\x2c\x2e\x3a-\x3c\x3e\x40\x5b-\x5d\x7f-\xff]+|\x5b([^\x0d\x5b-\x5d\x80-\xff]|\x5c[\x00-\x7f])*\x5d))*$/;
@@ -3127,7 +3127,7 @@
 	    define
 	};
 	const booleanValidators = {
-	    default: boolean$1,
+	    default: boolean$1
 	    //required
 	};
 	// Type Defaults //
@@ -3164,11 +3164,11 @@
 	        value = ensureArray(value);
 	        if (isFalsey(value))
 	            return '';
-	        return (value[0] instanceof File) ? '' : message;
+	        return value[0] instanceof File ? '' : message;
 	    };
 	}
 	function arrayOf(validators) {
-	    const fn = (value) => '';
+	    const fn = (_value) => '';
 	    fn._handlers = validators;
 	    return fn;
 	}
@@ -3327,11 +3327,12 @@
 	    };
 	}
 	function filetype(accept, message = 'File input contains invalid mime type.') {
+	    const accepted = ensureArray(accept);
 	    return (value) => {
 	        value = ensureArray(value);
-	        if (!((value)[0] instanceof File))
+	        if (!(value[0] instanceof File))
 	            return '';
-	        const invalid = value.some(f => !accept.includes(f.type));
+	        const invalid = value.some((f) => !accepted.includes(f.type));
 	        return invalid ? message : '';
 	    };
 	}
@@ -3340,7 +3341,7 @@
 	        value = ensureArray(value);
 	        if (isFalsey(value) || !(value[0] instanceof File))
 	            return '';
-	        const invalid = value.some(f => f.size > max);
+	        const invalid = value.some((f) => f.size > max);
 	        return invalid ? message : '';
 	    };
 	}
@@ -3349,7 +3350,7 @@
 	        value = ensureArray(value);
 	        if (isFalsey(value) || !(value[0] instanceof File))
 	            return '';
-	        const invalid = value.some(f => f.size < min);
+	        const invalid = value.some((f) => f.size < min);
 	        return invalid ? message : '';
 	    };
 	}
@@ -3441,7 +3442,7 @@
 	     * @param config configuration containing validator definitions.
 	     */
 	    function object(config) {
-	        function parseBase(async, flatten, values, ...args) {
+	        function parseBase(async, flatten, values, ..._args) {
 	            if (values === null || Array.isArray(values) || typeof values !== 'object')
 	                throw new Error(`Parse value must be an object.`);
 	            const errors = {};
@@ -3491,7 +3492,7 @@
 	                            continue;
 	                        }
 	                        const dataVal = lodash_get(values, path);
-	                        const messages = await val.parseAsync(dataVal, values);
+	                        const messages = (await val.parseAsync(dataVal, values));
 	                        const k = path;
 	                        handleMessages(k, messages);
 	                    }
@@ -3546,22 +3547,22 @@
 	        };
 	    }
 	    /**
-	    * Generate validation configuration from validator map.
-	    * This is used internally by "fromObject" method.
-	    *
-	    * @example
-	    * import k from '@kensho/validator';
-	    * const item = k.mapFromItem({
-	    *    type: string,
-	    *    validators: {
-	    *      required: true,
-	    *      min: 5,
-	    *      max: [10, 'Field is too long.']
-	    *    }
-	    * });
-	    *
-	    * @param item the configuration item containing type and validators.
-	    */
+	     * Generate validation configuration from validator map.
+	     * This is used internally by "fromObject" method.
+	     *
+	     * @example
+	     * import k from '@kensho/validator';
+	     * const item = k.mapFromItem({
+	     *    type: string,
+	     *    validators: {
+	     *      required: true,
+	     *      min: 5,
+	     *      max: [10, 'Field is too long.']
+	     *    }
+	     * });
+	     *
+	     * @param item the configuration item containing type and validators.
+	     */
 	    function fromObjectItem(item) {
 	        const scope = instance[item.type]();
 	        if (!item.validators)
@@ -3597,7 +3598,7 @@
 	     * @param config an object containing keys to map to known validators.
 	     */
 	    function fromObject(config) {
-	        let obj = {};
+	        const obj = {};
 	        function recurseObject(conf, parent = '') {
 	            for (const [key, val] of Object.entries(conf)) {
 	                if (!val.type || !val.validators) {
@@ -3612,6 +3613,7 @@
 	            return object(obj);
 	        }
 	        // Need to fix this typing.
+	        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 	        // @ts-ignore
 	        return recurseObject(config);
 	    }

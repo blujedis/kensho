@@ -37,5 +37,8 @@ module.exports = {
     "import/resolver": {
       "typescript": {}
     }
-  }
+  },
+  "ignorePatterns": [
+    "rollup.config.js"
+  ]
 };

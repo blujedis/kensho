@@ -31,8 +31,8 @@ const options = {
   input: './src/index.ts',
 
   external: [
-    'react',
-    'react-dom',
+    'svelte',
+    'svelte/store'
   ],
 
   output: [
@@ -40,13 +40,13 @@ const options = {
       ...common,
       file: './dist/index.js',
       format: 'commonjs',
-      globals: { react: 'React', 'react-dom': 'ReactDOM' }
+      globals: { 'svelte/store': 'store' }
     },
     {
       ...common,
       file: './dist/index.cjs',
       format: 'commonjs',
-      globals: { react: 'React', 'react-dom': 'ReactDOM' }
+      globals: { 'svelte/store': 'store' }
     },
     {
       ...common,
@@ -62,14 +62,14 @@ const options = {
       ...common,
       file: './dist/index.umd.js',
       format: 'umd',
-      globals: { react: 'React', 'react-dom': 'ReactDOM' }
+     globals: { 'svelte/store': 'store' }
     },
     {
       ...common,
       file: './dist/index.umd.min.js',
       format: 'umd',
-      globals: { react: 'React', 'react-dom': 'ReactDOM' },
       plugins: [terser()],
+     globals: { 'svelte/store': 'store' }
     },
 
   ],

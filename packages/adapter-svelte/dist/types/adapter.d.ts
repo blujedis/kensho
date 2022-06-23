@@ -1,56 +1,43 @@
 import { type Writable } from 'svelte/store';
-import { FormOptions, SubscribeState } from '@kensho/form';
+import { FormAdapterOptions, FormElement, KeyOfAny, Path, SubscribeState } from '@kensho/form';
 interface Store<T> {
-	subscribe: Writable<T>['subscribe'];
-	set: Writable<T>['set'];
+    subscribe: Writable<T>['subscribe'];
+    set: Writable<T>['set'];
 }
-export declare function useKensho<T extends Record<string, unknown>, F extends boolean = false>(
-	options: FormOptions<T, F>
-): {
-	store: Store<SubscribeState<T, F>>;
-	form: (f: HTMLFormElement | null) => {
-		destroy: () => void;
-	};
-	field: {
-		<E extends import('@kensho/form').FormElement>(
-			name: import('@kensho/form').KeyOfAny<import('@kensho/form').Path<T>>,
-			index: number
-		): import('@kensho/form').FormField<E[]>;
-		<E_1 extends import('@kensho/form').FormElement>(
-			name: import('@kensho/form').KeyOfAny<import('@kensho/form').Path<T>>
-		): import('@kensho/form').FormField<E_1>;
-	};
-	reset: <U extends Record<string, unknown>>(values?: U | undefined) => Promise<void>;
-	getValue: (
-		name: import('@kensho/form').KeyOfAny<import('@kensho/form').Path<T>>,
-		transform?: boolean | undefined
-	) => import('@kensho/form').FormDataValue | import('@kensho/form').FormDataValue[];
-	getValues: {
-		(flat: boolean): Record<
-			import('@kensho/form').KeyOfAny<import('@kensho/form').Path<T>>,
-			import('@kensho/form').FormDataValue
-		>;
-		(): Required<T>;
-	};
-	setValue: (
-		name: import('@kensho/form').KeyOfAny<import('@kensho/form').Path<T>>,
-		value: import('@kensho/form').FormDataValue | import('@kensho/form').FormDataValue[]
-	) => void;
-	setValues: <U_1 extends Record<string, unknown>>(values: U_1) => void;
-	getFields: () => Record<
-		import('@kensho/form').KeyOfAny<import('@kensho/form').Path<T>>,
-		import('@kensho/form').FormField<import('@kensho/form').FormElement>
-	>;
-	validate: <U_2 extends Record<string, unknown>>(
-		values?: U_2 | undefined
-	) => Promise<import('@kensho/form').ErrorState<T, F>>;
-	destroy: () => void;
-	getNativeValidators: (
-		name: import('@kensho/form').KeyOfAny<import('@kensho/form').Path<T>>
-	) =>
-		| import('@kensho/form').NativeValidatorAttributes
-		| import('@kensho/form').NativeValidatorAttributes[];
-	subscribe: (fn: (state: SubscribeState<T, F>) => void) => () => void;
+export declare function useKensho<T extends Record<string, unknown>, F extends boolean = false>(options: FormAdapterOptions<T, F>): {
+    store: Store<SubscribeState<T, F>>;
+    form: null;
+    register: (f: HTMLFormElement | null) => {
+        destroy: () => void;
+    };
+    field: {
+        (name: KeyOfAny<Path<T>>, value?: import("@kensho/form").FormElementValue): import("@kensho/form").FormField;
+        (element: Partial<FormElement>): import("@kensho/form").FormField;
+    };
+    getValue: (name: KeyOfAny<Path<T>>, cast?: boolean | import("@kensho/form").CoerceHandler | undefined) => import("@kensho/form").FormElementValue;
+    getValues: (canTransform?: boolean | undefined) => Required<T & {
+        [key: string]: unknown;
+    }>;
+    setValue: (name: KeyOfAny<Path<T>>, value: import("@kensho/form").FormElementValue) => void;
+    setValues: <U extends Record<string, unknown>>(values: U) => void;
+    validate: {
+        <U_1 extends Record<string, unknown>>(values: U_1): Promise<import("@kensho/form").ErrorState<T & {
+            [key: string]: unknown;
+        }, F>>;
+        (names?: KeyOfAny<Path<T>> | KeyOfAny<Path<T>>[] | undefined): Promise<import("@kensho/form").ErrorState<T & {
+            [key: string]: unknown;
+        }, F>>;
+    };
+    getNativeValidators: (name: KeyOfAny<Path<T>>) => import("@kensho/form").NativeValidatorAttributes | import("@kensho/form").NativeValidatorAttributes[];
+    reset: <U_2 extends Record<string, unknown> = T & {
+        [key: string]: unknown;
+    }>(values?: U_2 | undefined, replaceDefaults?: boolean | undefined) => Promise<void>;
+    submit: (e?: Event | undefined) => void;
+    subscribe: (fn: (state: SubscribeState<T & {
+        [key: string]: unknown;
+    }, F>) => void) => () => void;
+    unsubscribe: (fn?: ((...args: any[]) => void) | undefined) => void;
+    destroy: () => void;
 };
 export {};
 //# sourceMappingURL=adapter.d.ts.map

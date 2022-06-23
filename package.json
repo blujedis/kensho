@@ -10,9 +10,9 @@
   "scripts": {
     "dev": "turbo run dev --parallel",
     "dev:next": "turbo run dev --filter={next,adapter-react,form,validator} --parallel",
-    "dev:docs": "turbo run dev --filter={svelte,adapter-svelte,form,validator} --parallel",
+    "dev:svelte": "turbo run dev --filter={svelte,adapter-svelte,form,validator} --parallel",
     "build:next": "turbo run build --filter={next,adapter-react,form,validator",
-    "build:docs": "turbo run build --filter={svelte,adapter-svelte,form,validator",
+    "build:svelte": "turbo run build --filter={svelte,adapter-svelte,form,validator",
     "build": "turbo run build --filter={adapter-svelte,adapter-react,form,validator}",
     "lint": "turbo run lint",
     "format": "turbo run format",

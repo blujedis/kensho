@@ -3,7 +3,7 @@
  *
  * @param value the value to ensure as an array.
  */
-export declare const ensureArray: <T extends unknown>(value: T | T[]) => T[];
+export declare const ensureArray: <T>(value: T | T[]) => T[];
 /**
  * Simple string format function.
  *
@@ -14,10 +14,7 @@ export declare const ensureArray: <T extends unknown>(value: T | T[]) => T[];
  * @param str the string to be formatted.
  * @param args array of string, number or booleans
  */
-export declare function formatStr(
-  str: string,
-  ...args: (string | number | boolean)[]
-): string;
+export declare function formatStr(str: string, ...args: (string | number | boolean)[]): string;
 /**
  * Simple string format function.
  *
@@ -30,10 +27,7 @@ export declare function formatStr(
  * @param str the string to be formatted.
  * @param map object of key values.
  */
-export declare function formatStr(
-  str: string,
-  map: Record<string, unknown>
-): string;
+export declare function formatStr(str: string, map: Record<string, unknown>): string;
 /**
  * Cheap unique id that's safe enough for a small list of ids.
  * However If you use this in a database I'll find you & slap you!!!
@@ -42,11 +36,7 @@ export declare function formatStr(
  * @param radix the base number system used when parsing the string.
  * @param hexadecimal the base hexadecimal number used for generating. (16777215)
  */
-export declare function cheapUniq(
-  prefix?: string,
-  radix?: number,
-  hexadecimal?: number
-): string;
+export declare function cheapUniq(prefix?: string, radix?: number, hexadecimal?: number): string;
 /**
  * Checks value if is falsey, null, empty string or undefined.
  *
