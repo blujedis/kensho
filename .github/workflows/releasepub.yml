@@ -16,7 +16,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@main
         with:
-          token: ${{ secrets.SERVICE_ACCOUNT_PAT }}
+          token: ${{ secrets.WORKFLOW_SERVICE_ACCT }}
 
       - name: Enable node
         uses: actions/setup-node@main
