@@ -19,25 +19,26 @@ jobs:
         uses: actions/setup-node@v2
         with:
           node-version: 14.x
+          registry-url: 'https://blureg.blujedi.com'
 
-      - name: Install pnpm
-        uses: pnpm/action-setup@v2.2.2
-        id: pnpm-install
-        with:
-          version: 7
-          run_install: false
+      # - name: Install pnpm
+      #   uses: pnpm/action-setup@v2.2.2
+      #   id: pnpm-install
+      #   with:
+      #     version: 7
+      #     run_install: false
 
-      - name: Install Dependencies
-        run: npm install
+      # - name: Install Dependencies
+      #   run: pnpm install
 
       - name: Create Release Pull Request or Publish to Registry
         id: changesets
         uses: changesets/action@v1
         with:
           # This expects you to have a script called release which does a build for your packages and calls changeset publish
-          publish: npm run release
+          publish: pnpx changeset publish
         env:
-          GITHUB_TOKEN: ${{ secrets.WORKFLOW_REPO_ACCT }}
+          GITHUB_TOKEN: ${{ secrets.SERVICE_ACCT_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN_BLUREG }}
 
       # - name: Send a Slack notification if a publish happens
