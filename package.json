@@ -16,15 +16,16 @@
     "build:svelte": "turbo run build --filter={svelte,adapter-svelte,form,validator",
     "lint": "turbo run lint",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
-    "prepare": "husky install"
+    "prepare": "husky install",
+    "release": "pnpm build && changeset publish"
   },
   "devDependencies": {
     "@commitlint/cli": "^17.0.2",
     "@commitlint/config-conventional": "^17.0.2",
-    "eslint-config-root": "workspace:*",
     "husky": "^8.0.1",
     "prettier": "latest",
-    "turbo": "latest"
+    "turbo": "latest",
+    "@changesets/cli": "^2.23.0"
   },
   "engines": {
     "npm": ">=7.0.0",

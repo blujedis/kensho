@@ -16,12 +16,17 @@
     "@kensho/adapter-react": "workspace:*"
   },
   "devDependencies": {
-    "eslint-config-next": "workspace:*",
     "eslint": "7.32.0",
     "next-transpile-modules": "9.0.0",
     "tsconfig": "workspace:*",
     "@types/node": "^17.0.12",
     "@types/react": "17.0.37",
-    "typescript": "^4.5.3"
+    "typescript": "^4.5.3",
+    "@typescript-eslint/parser": "^5.27.2-alpha.12",
+    "@typescript-eslint/typescript-estree": "^5.27.2-alpha.12",
+    "eslint-config-next": "^12.0.8",
+    "eslint-config-prettier": "^8.3.0",
+    "eslint-plugin-react": "7.28.0",
+    "eslint-plugin-react-hooks": "^4.6.0"
   }
 }

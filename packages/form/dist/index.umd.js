@@ -5576,7 +5576,6 @@
           ...options
       };
       options.initialValues = { ...options.initialValues };
-      // const initialKeys = flattenKeys(options.initialValues);
       // FORM & CHILD ELEMENTS //
       let _form = null;
       const _elements = {};
@@ -5690,12 +5689,6 @@
           _fieldState = newState;
           updateFormState();
       }
-      // function getFields() {
-      //   return Object.keys(elements).reduce((a, key) => {
-      //     a[key] = field(key);
-      //     return a;
-      //   }, {} as any) as Record<ElementKey, FormField<FormElement>>;
-      // }
       // VALIDATION //
       /**
        * Gets a normalize validator function warns if not enabled.
@@ -5749,15 +5742,6 @@
       function getBoundKeys() {
           return Object.keys(_elements);
       }
-      /**
-       * Merge two arrays of strings.
-       *
-       * @param target the target array of keys.
-       * @param source additional source array of keys.
-       */
-      // function mergeKeys(target: ElementKey[], source: ElementKey[]) {
-      //   return [...(new Set([...target, ...source]))];
-      // }
       /**
        * Gets an array of bound elements/fields.
        */
@@ -6085,10 +6069,6 @@
           };
           return result;
       }
-      // function normalizeDefaultValue(el: HTMLElement & { name: string, value: any, checked: boolean }) {
-      //   let defaultValue = getProperty(options.initialValues, el.name);
-      //   defaultValue  = typeof defaultValue === 'undefined' ? el.value : defaultValue;
-      // }
       /**
        * Binds a collection of elements to the form controller for management.
        *
@@ -6189,6 +6169,7 @@
        * Destroys the Kensho form controller instance unbinding from form, removing elements.
        */
       function destroy() {
+          _subscribers = [];
           unbind(...getElements());
           if (_unsubscribeMutationObserver)
               _unsubscribeMutationObserver();

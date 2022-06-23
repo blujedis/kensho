@@ -34,5 +34,5 @@ yarn-error.log*
 
 # misc
 **/*.tmp
-.fixtures
+**/*.fixtures
 

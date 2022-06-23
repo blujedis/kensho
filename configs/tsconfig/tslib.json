@@ -6,7 +6,6 @@
     "lib": [
       "ES2015"
     ],
-    "outDir": "dist",
     "module": "ESNext",
     "target": "ES6",
     "moduleResolution": "node"

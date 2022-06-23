@@ -215,7 +215,7 @@ export function createController<T extends Record<string, unknown>, F extends bo
 
     const isAllFields = !values;
 
-    values = values || getValues() as U;
+    values = values || getValues() as unknown as U;
     names = names || flattenKeys(values);
 
     const validateHandler = getValidator();
@@ -771,6 +771,7 @@ export function createController<T extends Record<string, unknown>, F extends bo
    * Destroys the Kensho form controller instance unbinding from form, removing elements.
    */
   function destroy() {
+    _subscribers = [];
     unbind(...getElements());
     if (_unsubscribeMutationObserver) _unsubscribeMutationObserver();
     if (_form) {
