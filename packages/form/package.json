@@ -1,6 +1,6 @@
 {
   "name": "@kensho/form",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Form state controllor with validation plugin support.",
   "cdn": "./dist/index.umd.js",
   "main": "./dist/index.js",
@@ -26,7 +26,7 @@
     "clean": "rimraf ./dist",
     "build": "npm run clean && rollup --config ./rollup.config.js",
     "dev": "rollup --config ./rollup.config.js -w",
-    "format" : "prettier --write 'src/**/*.{js,jsx,ts,tsx,md}'",
+    "format": "prettier --write 'src/**/*.{js,jsx,ts,tsx,md}'",
     "lint": "eslint src/*.ts*",
     "test": "echo \"Warn: no test specified in form\""
   },

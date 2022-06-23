@@ -1,17 +1,17 @@
 {
   "name": "next",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "private": true,
   "scripts": {
     "dev": "next dev -p 5000",
     "build": "next build",
     "start": "next start",
-    "format" : "prettier --write '**/*.{js,jsx,ts,tsx,md}'",
+    "format": "prettier --write '**/*.{js,jsx,ts,tsx,md}'",
     "lint": "next lint",
     "test": "echo \"Warn: no test specified in `form`\""
   },
   "dependencies": {
-    "next": "12.0.8",
+    "next": "0.0.1",
     "react": "17.0.2",
     "react-dom": "17.0.2",
     "@kensho/validator": "workspace:*",
