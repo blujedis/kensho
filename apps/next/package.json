@@ -1,5 +1,5 @@
 {
-  "name": "next",
+  "name": "@kensho/next",
   "version": "0.0.1",
   "private": true,
   "scripts": {
@@ -11,7 +11,7 @@
     "test": "echo \"Warn: no test specified in `form`\""
   },
   "dependencies": {
-    "next": "0.0.1",
+    "next": "^9.3.1",
     "react": "17.0.2",
     "react-dom": "17.0.2",
     "@kensho/validator": "workspace:*",
