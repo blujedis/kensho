@@ -13,14 +13,15 @@
     "dev:docs": "turbo run dev --filter={svelte,adapter-svelte,form,validator} --parallel",
     "build:next": "turbo run build --filter={next,adapter-react,form,validator",
     "build:docs": "turbo run build --filter={svelte,adapter-svelte,form,validator",
-    "build": "turbo run build",
+    "build": "turbo run build --filter={adapter-svelte,adapter-react,form,validator}",
     "lint": "turbo run lint",
     "format": "turbo run format",
     "test": "turbo run test",
     "prepare": "husky install",
     "change": "changeset add",
     "bump": "changeset version",
-    "release": "pnpm build && changeset publish && git push --follow-tags"
+    "release": "pnpm build && changeset publish",
+    "pushtags": "git push --follow-tags"
   },
   "devDependencies": {
     "husky": "^8.0.1",
