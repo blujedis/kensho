@@ -1,7 +1,7 @@
 {
   "name": "@kensho/validator",
   "version": "0.0.2",
-  "description": "HTMl centric form validation library.",
+  "description": "HTML form validation library.",
   "cdn": "dist/index.umd.js",
   "main": "dist/index.js",
   "types": "dist/types/index.d.ts",
