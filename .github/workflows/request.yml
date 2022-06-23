@@ -31,7 +31,7 @@ jobs:
         run: pnpm install
 
       - name: Create Pull Request
-          uses: changesets/action@master
-          id: changesets
-          env:
-            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        uses: changesets/action@master
+        id: changesets
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
