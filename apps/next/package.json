@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "format": "prettier --write '**/*.{js,jsx,ts,tsx,md}'",
-    "lint": "next lint",
+    "lint": "eslint **/*.ts*",
     "test": "echo \"Warn: no test specified in `form`\""
   },
   "dependencies": {
