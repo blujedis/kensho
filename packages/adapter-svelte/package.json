@@ -26,8 +26,9 @@
     "clean": "rimraf ./dist",
     "build": "npm run clean && rollup --config ./rollup.config.js",
     "dev": "rollup --config ./rollup.config.js -w",
+    "format" : "prettier --write 'src/**/*.{js,jsx,ts,tsx,md}'",
     "lint": "eslint src/*.ts*",
-    "test": "echo \"Warn: no test specified\" && exit 0"
+    "test": "echo \"Warn: no test specified in adapter-svelte\""
   },
   "author": {
     "name": "Blujedi LLC",

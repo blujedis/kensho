@@ -9,7 +9,7 @@
 	export let message = 'Default alert message.';
 	export let theme = 'default' as ThemeColor;
 	export let position = 'none' as 'bottom' | 'top' | 'none';
-	
+
 	function dispatchClose() {
 		dispatch('alert_close', {
 			text: 'nice event'

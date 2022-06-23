@@ -24,10 +24,11 @@
   ],
   "scripts": {
     "clean": "rimraf ./dist",
-    "lint": "eslint src/*.ts*",
     "build": "npm run clean && rollup --config ./rollup.config.js",
     "dev": "rollup --config ./rollup.config.js -w",
-    "test": "echo \"Warn: no test specified\" && exit 0"
+    "format" : "prettier --write 'src/**/*.{js,jsx,ts,tsx,md}'",
+    "lint": "eslint src/*.ts*",
+    "test": "echo \"Warn: no test specified in form\""
   },
   "author": {
     "name": "Blujedi LLC",

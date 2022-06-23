@@ -1,6 +1,6 @@
 <script context="module" lang="ts">
 	import type { Load } from '@sveltejs/kit';
-	const dev = import.meta.env.DEV;
+	const isDev = import.meta.env.DEV;
 	const load: Load = (ctx) => {
 		let { error, status } = ctx;
 		error = error || new Error('Unknown error has occurred');
@@ -11,7 +11,7 @@
 				stack: error.stack,
 				params: JSON.stringify(ctx.params),
 				status,
-				dev
+				dev: isDev
 			}
 		};
 	};

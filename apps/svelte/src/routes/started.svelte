@@ -33,8 +33,7 @@
 				You can install <strong>Kensho</strong> using the following command (validator pkg optional)
 			</p>
 
-			<pre><code class="language-shell"
-					>npm install @kensho/adapter-svelte @kensho/validator</code
+			<pre><code class="language-shell">npm install @kensho/adapter-svelte @kensho/validator</code
 				></pre>
 
 			<p class="my-4">

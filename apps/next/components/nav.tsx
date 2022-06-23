@@ -1,11 +1,11 @@
-import Link from 'next/link';
-import { useRouter } from 'next/router';
+import Link from "next/link";
+import { useRouter } from "next/router";
 
 const links = [
-  { name: 'Home', href: '/' },
-  { name: 'Basic', href: '/basic' },
-  { name: 'Validation', href: '/validation' },
-  { name: 'Kitchen Sink', href: '/kitchen' },
+  { name: "Home", href: "/" },
+  { name: "Basic", href: "/basic" },
+  { name: "Validation", href: "/validation" },
+  { name: "Kitchen Sink", href: "/kitchen" },
 ];
 
 const linkDefault = `border-b-2 border-transparent hover:text-gray-800 transition-colors duration-200 transform dark:hover:text-gray-200 hover:border-indigo-500 mx-1.5 sm:mx-6`;
@@ -26,9 +26,7 @@ const createLinks = (activePath: string) => {
 
 const Nav = () => {
   const { asPath } = useRouter();
-  return (
-    <>{createLinks(asPath)}</>
-  );
+  return <>{createLinks(asPath)}</>;
 };
 
 export default Nav;

@@ -33,9 +33,7 @@
 	<Header />
 	<main class="pt-24 overflow-x-hidden overflow-y-auto">
 		<div class="px-4 container mx-auto text-gray-800 dark:text-gray-200">
-			<h1 class="text-3xl font-semibold text-center capitalize lg:text-4xl mb-8">
-				Docs
-			</h1>
+			<h1 class="text-3xl font-semibold text-center capitalize lg:text-4xl mb-8">Docs</h1>
 		</div>
 	</main>
 </div>

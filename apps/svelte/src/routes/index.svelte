@@ -108,8 +108,8 @@
 					<p
 						class="mt-3 max-w-md mx-auto text-base text-gray-500 dark:text-gray-400 sm:text-lg md:mt-5 md:text-xl md:max-w-3xl"
 					>
-						Plain JavaScript form controller exposing validation and hooks for managing
-						form submissions in responsive web applications.
+						Plain JavaScript form controller exposing validation and hooks for managing form
+						submissions in responsive web applications.
 					</p>
 					<div class="mt-5 max-w-md mx-auto sm:flex sm:justify-center md:mt-8">
 						<div class="rounded-md shadow">
@@ -143,7 +143,8 @@
 						Platform Agnostic
 					</p>
 					<p class="mt-4 text-lg text-gray-500 dark:text-gray-400">
-						Kensho was written in plain JavaScript. This allows for writing adapters, essentially plugins that can be used to work with nearly any platform you may choose.
+						Kensho was written in plain JavaScript. This allows for writing adapters, essentially
+						plugins that can be used to work with nearly any platform you may choose.
 					</p>
 				</div>
 				<div class="mt-12 lg:mt-0 lg:col-span-2">
@@ -264,10 +265,10 @@
 								</p>
 								<p>
 									Erat pellentesque dictumst ligula porttitor risus eget et eget. Ultricies tellus
-									felis id dignissim eget. Est augue <a href="#">maecenas</a> risus nulla ultrices congue
+									felis id dignissim eget. Est augue <a href="/">maecenas</a> risus nulla ultrices congue
 									nunc tortor. Eu leo risus porta integer suspendisse sed sit ligula elit.
 								</p>
-								<ol role="list">
+								<ol>
 									<li>Integer varius imperdiet sed interdum felis cras in nec nunc.</li>
 									<li>Quam malesuada odio ut sit egestas. Elementum at porta vitae.</li>
 								</ol>
@@ -302,7 +303,7 @@
 						</div>
 						<div class="mt-8 inline-flex rounded-md shadow">
 							<a
-								href="#"
+								href="/"
 								class="flex items-center justify-center px-5 py-3 border border-transparent text-base font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700"
 							>
 								Contact sales

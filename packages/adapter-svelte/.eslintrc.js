@@ -14,8 +14,8 @@ module.exports = {
   },
   rules: {
     '@typescript-eslint/no-explicit-any': 0,
-    'no-unused-vars': ['none', { ignoreRestSiblings: true }],
-    '@typescript-eslint/no-unused-vars': ['none', { ignoreRestSiblings: true }]
+    'no-unused-vars': ['off', { ignoreRestSiblings: true }],
+    '@typescript-eslint/no-unused-vars': ['off', { ignoreRestSiblings: true }]
   },
   env: {
     browser: true,

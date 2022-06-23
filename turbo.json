@@ -1,11 +1,23 @@
 {
   "pipeline": {
     "build": {
-      "dependsOn": ["^build"],
-      "outputs": ["dist/**", ".next/**", ".svelte-kit/**"]
+      "dependsOn": [
+        "^build"
+      ],
+      "outputs": [
+        "dist/**",
+        ".next/**",
+        ".svelte-kit/**"
+      ]
     },
     "lint": {
       "outputs": []
+    },
+    "test": {
+      "dependsOn": []
+    },
+    "format": {
+      "dependsOn": []
     },
     "dev": {
       "cache": false

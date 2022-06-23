@@ -17,7 +17,6 @@ const config = {
 			plugins: [svg()]
 		}
 	}
-
 };
 
 export default config;
