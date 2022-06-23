@@ -16,7 +16,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@main
         with:
-          token: ${{ secrets.WORKFLOW_SERVICE_ACCT }}
+          token: ${{ secrets.WORKFLOW_REPO_ACCT }}
 
       - name: Enable node
         uses: actions/setup-node@main
@@ -65,4 +65,4 @@ jobs:
         with:
           publish: pnpx changeset publish
         env:
-          GITHUB_TOKEN: ${{ secrets.WORKFLOW_SERVICE_ACCT }}
+          GITHUB_TOKEN: ${{ secrets.WORKFLOW_REPO_ACCT }}
