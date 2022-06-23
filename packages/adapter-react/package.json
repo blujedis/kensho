@@ -1,7 +1,7 @@
 {
   "name": "@kensho/adapter-react",
   "description": "Kensho Form store adapter for Svelte.",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "cdn": "dist/index.umd.js",
   "main": "dist/index.js",
   "types": "dist/types/index.d.ts",
