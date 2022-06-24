@@ -48,3 +48,8 @@ jobs:
         id: changesets
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      # - name: Publish
+      #   if: steps.changesets.outputs.hasChangesets == 'false'
+      #   # You can do something when a publish should happen.
+      #   run: yarn publish

@@ -1,3 +1,3 @@
 # Kensho
 
-Coming soon...
+Coming soon!

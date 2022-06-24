@@ -1,0 +1,7 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+a.link {
+	@apply text-indigo-500 dark:text-indigo-400;
+}
