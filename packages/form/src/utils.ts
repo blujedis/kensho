@@ -283,6 +283,7 @@ export function createPlaceholder(name: string) {
 	if (!name) return '';
 	const segments = name.split('.');
 	let first = segments.shift() as string;
-	first = first?.charAt(0).toUpperCase() + first?.slice(1);
+	if (!first) return '';
+	first = first.charAt(0).toUpperCase() + first.slice(1);
 	return [first, ...segments].join(' ');
 }

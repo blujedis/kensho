@@ -5,3 +5,10 @@
 a.link {
 	@apply text-indigo-500 dark:text-indigo-400;
 }
+a.link:hover {
+	@apply text-indigo-600 dark:text-indigo-500;
+}
+pre,
+code {
+	word-break: break-all;
+}

@@ -71,7 +71,7 @@
 		class="flex-grow flex flex-col justify-center max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8"
 	>
 		<div class="flex-shrink-0 flex justify-center">
-			<Icon color={colorNoHover}>
+			<Icon color={colorNoHover} size="xl">
 				{#if warningIcon}
 					<Warning />
 				{:else}
@@ -107,8 +107,7 @@
 
 		{#if dev}
 			<div class="mx-auto">
-				<pre class="bg-gray-50 border border-1 border-gray-100 overflow-auto p-6 max-w-3xl"><code
-						>{stack}</code
+				<pre class="border border-1 border-gray-100 overflow-auto max-w-3xl"><code>{stack}</code
 					></pre>
 			</div>
 		{/if}

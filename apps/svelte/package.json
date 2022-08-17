@@ -36,6 +36,7 @@
 	},
 	"type": "module",
 	"dependencies": {
+		"highlight.js": "^11.5.1",
 		"@fontsource/fira-mono": "^4.5.0",
 		"@kensho/adapter-svelte": "workspace:*",
 		"@kensho/form": "workspace:*",

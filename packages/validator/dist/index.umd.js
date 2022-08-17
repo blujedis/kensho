@@ -1,9 +1,3 @@
-/*!
- * @kensho/validator v0.0.2
- * (c) Blujedi LLC
- * Released under the MIT License.
- */
-
 (function (global, factory) {
 	typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports) :
 	typeof define === 'function' && define.amd ? define(['exports'], factory) :

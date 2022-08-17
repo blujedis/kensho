@@ -1,7 +1,5 @@
 import useKensho from "@kensho/adapter-react";
-import { ChangeEventHandler, useRef, useState } from "react";
-import Head from "next/head";
-import Script from "next/script";
+import { ChangeEventHandler, useState } from "react";
 import Header from "../components/header";
 import Input from "../components/input";
 import Select from "../components/select";
@@ -10,7 +8,7 @@ export default function Web() {
   const [showPhone, setShowPhone] = useState(false);
 
   const initialValues = {
-    name: undefined,
+    name: "",
     email: "jones@email.com",
     phone: "760.555.1212",
     message: "This is just some content for a textarea",
@@ -76,20 +74,6 @@ export default function Web() {
 
   return (
     <>
-      <Head>
-        <script src="https://cdn.tailwindcss.com" defer></script>
-      </Head>
-      <Script id="tailwind">
-        {`tailwind.config = {
-            darkMode: 'class'
-            theme: {
-              container: { center: true }
-              extend: {
-                colors: {}
-              }
-            }
-            }`}
-      </Script>
       <Header />
       <div className="mx-auto container max-w-3xl">
         <div className="flex space-x-4 mb-4">
@@ -120,7 +104,7 @@ export default function Web() {
           <div className="mb-4">
             <Select multiple name="cars" size={3}>
               <option value="">--None--</option>
-              {/* <optgroup label="Domestic">
+              <optgroup label="Domestic">
                 <option value="Mustang">Mustang</option>
                 <option value="Corvette">Corvette</option>
                 <option value="Camaro">Camaro</option>
@@ -128,7 +112,7 @@ export default function Web() {
               </optgroup>
               <optgroup label="Foreign">
                 <option value="Supra">Supra</option>
-              </optgroup> */}
+              </optgroup>
               <option value="Mustang">Mustang</option>
               <option value="Corvette">Corvette</option>
               <option value="Camaro">Camaro</option>
@@ -152,10 +136,10 @@ export default function Web() {
             />
           </div>
 
-          {/* <div className="mb-4">
+          <div className="mb-4">
             <Input type="text" name="email" />
-            <span className="text-rose-500">{errors.email?.join('\n')}</span>
-          </div> */}
+            <span className="text-rose-500">{errors.email?.join("\n")}</span>
+          </div>
 
           {!showPhone ? null : (
             <div className="mb-4">
@@ -163,10 +147,10 @@ export default function Web() {
             </div>
           )}
 
-          {/* <div className="mb-4">
+          <div className="mb-4">
             <Input type="text" name="age" />
-            <span className="text-rose-500">{errors.age?.join('\n')}</span>
-          </div>*/}
+            <span className="text-rose-500">{errors.age?.join("\n")}</span>
+          </div>
 
           <div className="mb-4">
             <Input

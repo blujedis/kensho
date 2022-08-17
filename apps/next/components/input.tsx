@@ -1,5 +1,5 @@
 import { DetailedHTMLProps, FC, InputHTMLAttributes } from "react";
-import { DataTypeConfig } from "@kensho/adapter-react";
+import type { DataTypeConfig } from "@kensho/adapter-react";
 
 type NativeInputProps = DetailedHTMLProps<
   InputHTMLAttributes<HTMLInputElement>,

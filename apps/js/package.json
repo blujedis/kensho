@@ -1,0 +1,12 @@
+{
+  "name": "@kensho/js",
+  "version": "0.0.1",
+  "description": "Kensho JavaScript Example",
+  "scripts": {
+    "dev": "npx http-server ./ -p 5000 ",
+    "build": "echo \"Info: no build required for @kensho/adapter-javascript\"",
+    "format": "prettier --write '**/*.{js,jsx,ts,tsx,md}'",
+    "lint": "echo \"Info: no lint required for @kensho/adapter-javascript\"",
+    "test": "echo \"Warn: no test specified in @kensho/adapter-javascript\""
+  }
+}

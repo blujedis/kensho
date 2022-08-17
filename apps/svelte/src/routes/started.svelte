@@ -3,18 +3,20 @@
 	import useKensho from '@kensho/adapter-svelte';
 	import Head from '$lib/components/Head.svelte';
 	import Header from '$lib/components/Header.svelte';
+	import Footer from '$lib/components/Footer.svelte';
 	import InputField from '$lib/components/InputField.svelte';
 	import JavaScript from '$lib/icons/javascript.svg';
 	import React from '$lib/icons/React.svg';
 	import Svelte from '$lib/icons/svelte.svg';
+	import Solid from '$lib/icons/solid.svg';
 	import Tabs from '$lib/components/Tabs.svelte';
+	import { JS_BLOCK, REACT_BLOCK, SVELTE_BLOCK } from '$lib/constants';
+	import Code from '$lib/components/Code.svelte';
 
-	let TabInstance: Tabs;
-
-	const isActive = (index: number) => TabInstance?.isActive(index);
+	let activeTab = 0;
 
 	const initialValues = {
-		name: 'Christian Mesa',
+		name: 'Milton Waddams',
 		email: 'bob@google.com'
 	};
 
@@ -32,7 +34,7 @@
 <Head title="Home" description="Kensho Form Controller" />
 <div class="h-full">
 	<Header />
-	<main class="pt-24 overflow-x-hidden overflow-y-auto">
+	<main class="pt-24 pb-72 overflow-x-hidden overflow-y-auto">
 		<div class="px-4 container text-gray-800 dark:text-gray-200 mx-auto max-w-5xl">
 			<h1 class="text-4xl font-semibold text-center capitalize lg:text-4xl mb-8">
 				Kensho Form Controller
@@ -49,8 +51,13 @@
 			<p class="mb-4">The following official adapters are available:</p>
 
 			<p class="mb-4">
-				<a class="link" href="https://www.npmjs.com/package/@kensho/adapter-react">React</a><br />
-				<a class="link" href="https://www.npmjs.com/package/@kensho/adapter-svelte">Svelte</a>
+				<a class="link" href="https://www.npmjs.com/package/@kensho/adapter-svelte">Svelte</a><span
+					class="px-2">|</span
+				>
+				<a class="link" href="https://www.npmjs.com/package/@kensho/adapter-react">React</a><span
+					class="px-2">|</span
+				>
+				<a class="link" href="https://www.npmjs.com/package/@kensho/adapter-react">JavaScript</a>
 			</p>
 
 			<h3 class="text-3xl font-semibold text-gray-400 dark:text-gray-400 my-6">
@@ -73,27 +80,47 @@
 					>{`{yarn|pnpm}`} add @kensho/adapter-svelte</code
 				></pre>
 
+			<h3 class="text-3xl font-semibold text-gray-400 dark:text-gray-400 my-6">Basic Usage</h3>
+
 			<Tabs
-				bind:this={TabInstance}
-				active={1}
+				bind:active={activeTab}
 				items={[
-					{ name: 'React', Component: null, Icon: React },
-					{ name: 'Svelte', Component: null, Icon: Svelte },
-					{ name: 'JavaScript', Component: null, Icon: JavaScript }
+					{ name: 'Svelte', Icon: Svelte },
+					{ name: 'React', Icon: React },
+					{ name: 'Solid', Icon: Solid },
+					{ name: 'JavaScript', Icon: JavaScript }
 				]}
 			>
 				<div slot="panels">
-					<p>{isActive(1) + ''}</p>
-					<div in:fade={{ delay: 200 }} class={isActive(0) ? 'block' : 'hidden'}>React</div>
-					<div in:fade={{ delay: 200 }} class={isActive(0) ? 'block' : 'hidden'}>Svelte</div>
-					<div in:fade={{ delay: 200 }} class={isActive(0) ? 'block' : 'hidden'}>JavaScript</div>
+					{#if activeTab === 0}
+						<div class="mb-4">
+							<Code language="typescript" code={SVELTE_BLOCK} />
+						</div>
+					{/if}
+
+					{#if activeTab === 1}
+						<div class="mb-4">
+							<Code language="typescript" code={REACT_BLOCK} />
+						</div>
+					{/if}
+					{#if activeTab === 2}
+						<div class="mb-4">
+							<Code language="typescript" code={REACT_BLOCK} />
+						</div>
+					{/if}
+					{#if activeTab === 3}
+						<div class="mb-4">
+							<Code language="javascript" code={JS_BLOCK} />
+						</div>
+					{/if}
 				</div>
 			</Tabs>
 
-			<form use:register class="mt-4">
+			<!-- <form use:register class="mt-4">
 				<InputField name="name" />
 				<InputField name="email" />
-			</form>
+			</form> -->
 		</div>
 	</main>
+	<Footer />
 </div>

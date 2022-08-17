@@ -1,9 +1,3 @@
-/*!
- * @kensho/form v0.0.2
- * (c) Blujedi LLC
- * Released under the MIT License.
- */
-
 'use strict';
 
 Object.defineProperty(exports, '__esModule', { value: true });
@@ -5150,6 +5144,19 @@ function getFirstDefined(obj, props, altProp) {
     return found;
 }
 
+var helpers = /*#__PURE__*/Object.freeze({
+	__proto__: null,
+	getProperty: lodash_get,
+	setProperty: lodash_set,
+	hasProperty: lodash_has,
+	mergeObject: mergeObject,
+	ensureArray: ensureArray,
+	flattenMap: flattenMap,
+	flattenKeys: flattenKeys,
+	unflattenMap: unflattenMap,
+	getFirstDefined: getFirstDefined
+});
+
 // Data Type Conversion //
 /**
  * Used to convert/cast to data type.
@@ -5385,7 +5392,9 @@ function createPlaceholder(name) {
         return '';
     const segments = name.split('.');
     let first = segments.shift();
-    first = first?.charAt(0).toUpperCase() + first?.slice(1);
+    if (!first)
+        return '';
+    first = first.charAt(0).toUpperCase() + first.slice(1);
     return [first, ...segments].join(' ');
 }
 
@@ -5747,7 +5756,7 @@ function createController(options) {
         updateFormState({ validating: true });
         const result = (await validateHandler(values, names, context));
         const invalid = (typeof result !== 'undefined' && result !== null) ||
-            !!Object.keys(result).length;
+            !!Object.keys(result || {}).length;
         if (!invalid) {
             // valid set empty state.
             _errorState = {};
@@ -5919,9 +5928,10 @@ function createController(options) {
      * @param name the name of the element to parse.
      */
     function getNativeValidators(name) {
-        const el = _elements[name]?.el;
-        if (!el || !(el instanceof HTMLElement))
+        const conf = _elements[name];
+        if (!conf || !(conf.el instanceof HTMLElement))
             return {};
+        const el = conf.el;
         if (Array.isArray(el))
             return el.map((v) => parseNativeAttributes(v));
         return parseNativeAttributes(el);
@@ -6006,12 +6016,16 @@ function createController(options) {
         if (e)
             e.preventDefault();
         // Don't allow submit if already submitting, submitted or is invalid.
-        if (_formState.submitting || _formState.submitted || _formState.invalid)
+        if (_formState.submitting ||
+            _formState.submitted ||
+            _formState.invalid ||
+            !options.onSubmit)
             return false;
         updateFormState({ submitting: true, submitted: false });
         const values = getValues();
         const errors = await validate();
-        if (_formState.invalid) {
+        const hasErrors = Object.keys(errors || {}).length > 0;
+        if (hasErrors) {
             options.onError && options.onError(errors, context);
             return false;
         }
@@ -6041,7 +6055,7 @@ function createController(options) {
         onSubmit(e);
     }
     function field(nameOrElement, value) {
-        let name = '';
+        let name = nameOrElement;
         let newEl;
         if (!Array.isArray(nameOrElement) &&
             nameOrElement !== null &&
@@ -6065,7 +6079,7 @@ function createController(options) {
             bind(newEl);
         }
         const conf = _elements[name];
-        const el = conf?.el;
+        const el = conf && conf.el;
         const fs = _fieldState[name] || {};
         let timeoutId;
         const result = {
@@ -6138,7 +6152,9 @@ function createController(options) {
      */
     function bind(...collection) {
         for (const el of collection) {
-            const isValid = TYPES.includes(el?.type);
+            if (!el)
+                continue;
+            const isValid = TYPES.includes(el.type);
             const isUnbound = el.hasAttribute &&
                 el.hasAttribute(options.unboundAttribute || 'data-unbound');
             // Must be valid type have a name attribute and not be opted out by user.
@@ -6198,7 +6214,7 @@ function createController(options) {
             // Setter determines how to set the value for element type,
             // just pass key and any initial value.
             if (typeof defaultValue !== 'undefined')
-                setValue(key, lodash_get(options.initialValues, key));
+                setValue(key, defaultValue);
             updateFieldState(key, {
                 pristine: true,
                 value: defaultValue,
@@ -6305,13 +6321,5 @@ exports.HTML5_PLACEHOLDER_TYPES = HTML5_PLACEHOLDER_TYPES;
 exports.MAX_DEPTH = MAX_DEPTH;
 exports.VALID_MUTATION_NODES = VALID_MUTATION_NODES;
 exports["default"] = createController;
-exports.ensureArray = ensureArray;
-exports.flattenKeys = flattenKeys;
-exports.flattenMap = flattenMap;
-exports.getFirstDefined = getFirstDefined;
-exports.getProperty = lodash_get;
-exports.hasProperty = lodash_has;
-exports.mergeObject = mergeObject;
-exports.setProperty = lodash_set;
-exports.unflattenMap = unflattenMap;
+exports.helpers = helpers;
 //# sourceMappingURL=index.js.map

@@ -1,0 +1,1 @@
+# Kensho React Adapter

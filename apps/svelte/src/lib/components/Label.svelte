@@ -6,7 +6,7 @@
 </script>
 
 {#if label}
-	<label class="pl-1 text-gray-700 dark:text-gray-100 text-sm block text-sm font-medium" for={name}>
+	<label class="pl-1 text-gray-700 dark:text-gray-100 text-sm block font-medium" for={name}>
 		{capitalize(label + '')}
 	</label>
 {/if}

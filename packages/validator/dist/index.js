@@ -1,9 +1,3 @@
-/*!
- * @kensho/validator v0.0.2
- * (c) Blujedi LLC
- * Released under the MIT License.
- */
-
 'use strict';
 
 Object.defineProperty(exports, '__esModule', { value: true });

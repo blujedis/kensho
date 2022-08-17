@@ -7,7 +7,7 @@
 	export let active = 0;
 	export let tabClass =
 		'border-transparent group inline-flex items-center py-4 px-1 border-b-2 font-medium text-sm';
-	export let activeClass = 'border-indigo-500';
+	export let activeClass = 'border-indigo-500 text-indigo-500';
 	export let hoverClass = 'hover:border-indigo-500';
 	export let panelClass = '';
 	export let items = [] as {
@@ -15,11 +15,13 @@
 		Icon?: any;
 		Component?: (HTMLElement & { [key: string]: any }) | null;
 	}[];
+	export let onChanged: (index: number) => void = (index) => {};
 
-	export const changeTab = (index: number) => (active = index);
-	export const isActive = (index: number) => {
-		return index === active;
+	export const changeTab = (index: number) => {
+		active = index;
+		if (onChanged) onChanged(active);
 	};
+	export const isActive = (index: number) => index === active;
 </script>
 
 <div>
@@ -28,7 +30,7 @@
 		<select
 			id="tabs"
 			name="tabs"
-			class="block w-full focus:ring-indigo-500 focus:border-indigo-500 border-gray-300 rounded-md"
+			class="border border-1 py-2 px-2 block w-full focus:ring-indigo-500 focus:border-indigo-500 border-gray-300 rounded-sm dark:bg-transparent dark:border-gray-900"
 			on:change={(e) => changeTab(e.currentTarget?.selectedIndex)}
 		>
 			{#each items as item, i}
@@ -65,12 +67,14 @@
 		</div>
 	</div>
 
+	<!-- Components Defined in Panels Elemnet -->
 	{#if $$slots.panels}
-		<div class="mt-4">
+		<div class="mt-6">
 			<slot name="panels" />
 		</div>
 	{/if}
 
+	<!-- Display Components Passed in Items -->
 	{#each items as item, i}
 		{#if active == i}
 			<div class={panelClass} role="tabpanel">

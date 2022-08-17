@@ -4,13 +4,16 @@ import createController, {
 	SubscribeState,
 	FormElement,
 	DEFAULT_FORM_STATE,
-	getProperty,
 	KeyOfAny,
 	Path,
-	getFirstDefined
+	helpers
 } from '@kensho/form';
-import { useCallback, useEffect, useMemo } from 'react';
+import { useCallback, useEffect, useMemo, useRef } from 'react';
 import useStateRef from './useStateRef';
+
+type SubscribeHandler<S> = (state: S) => () => void;
+
+const { getProperty, getFirstDefined } = helpers;
 
 /**
  * Gets the default value for element based on adapter type.
@@ -104,6 +107,10 @@ export function useKensho<
 
 	return {
 		...ctrl,
-		store
+		store: {
+			...store,
+			subscribe: (...args: Parameters<typeof ctrl.subscribe>) =>
+				ctrl.subscribe(...args)
+		}
 	};
 }

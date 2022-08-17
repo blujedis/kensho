@@ -4,11 +4,8 @@
 		<meta charset="utf-8" />
 		<link rel="icon" href="%sveltekit.assets%/favicon.png?v=4" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
-		<link
-			rel="stylesheet"
-			href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.5.1/styles/github-dark-dimmed.min.css"
-		/>
-		<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.5.1/highlight.min.js"></script>
+		<!-- <link rel="stylesheet"
+		href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.5.1/styles/github-dark-dimmed.min.css" /> -->
 		<script>
 			if (
 				localStorage.theme === 'dark' ||
@@ -17,6 +14,7 @@
 				document.documentElement.classList.add('dark');
 			else document.documentElement.classList.remove('dark');
 		</script>
+		<script src="/js/index.umd.js"></script>
 		%sveltekit.head%
 	</head>
 

@@ -37,3 +37,8 @@ declare module '*.svg?url' {
 	const content: string;
 	export default content;
 }
+
+declare module 'prism-themes' {
+	const content: any;
+	export default content;
+}

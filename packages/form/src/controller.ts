@@ -259,22 +259,18 @@ export function createController<
 			typeof namesOrValues === 'object'
 				? (namesOrValues as U)
 				: null;
-
 		const isAllFields = !values;
-
 		values = values || (getValues() as unknown as U);
 		names = names || flattenKeys(values);
-
 		const validateHandler = getValidator();
 		updateFormState({ validating: true });
-
 		const result = (await validateHandler(values, names, context)) as ErrorState<
 			T,
 			F
 		>;
 		const invalid =
 			(typeof result !== 'undefined' && result !== null) ||
-			!!Object.keys(result).length;
+			!!Object.keys(result || {}).length;
 
 		if (!invalid) {
 			// valid set empty state.
@@ -291,7 +287,6 @@ export function createController<
 				return a;
 			}, {} as any);
 		}
-
 		updateFormState({ validating: false, invalid, valid: !invalid });
 		return _errorState;
 	}
@@ -459,8 +454,10 @@ export function createController<
 	function getNativeValidators(
 		name: ElementKey
 	): NativeValidatorAttributes | NativeValidatorAttributes[] {
-		const el = _elements[name]?.el;
-		if (!el || !(el instanceof HTMLElement)) return {} as NativeValidatorAttributes;
+		const conf = _elements[name];
+		if (!conf || !(conf.el instanceof HTMLElement))
+			return {} as NativeValidatorAttributes;
+		const el = conf.el;
 		if (Array.isArray(el)) return el.map((v) => parseNativeAttributes(v));
 		return parseNativeAttributes(el);
 	}
@@ -560,17 +557,25 @@ export function createController<
 	async function onSubmit(e?: SubmitEvent | Event) {
 		if (e) e.preventDefault();
 		// Don't allow submit if already submitting, submitted or is invalid.
-		if (_formState.submitting || _formState.submitted || _formState.invalid)
+		if (
+			_formState.submitting ||
+			_formState.submitted ||
+			_formState.invalid ||
+			!options.onSubmit
+		)
 			return false;
 		updateFormState({ submitting: true, submitted: false });
 		const values = getValues();
 		const errors = await validate();
-		if (_formState.invalid) {
+		const hasErrors = Object.keys(errors || {}).length > 0;
+		if (hasErrors) {
 			options.onError && options.onError(errors, context);
 			return false;
 		}
+
 		options.onSubmit(values, context);
 		updateFormState({ submitting: false, submitted: true, pristine: false });
+
 		return false;
 	}
 
@@ -634,7 +639,7 @@ export function createController<
 		nameOrElement: ElementKey | Partial<FormElement>,
 		value?: FormElementValue
 	) {
-		let name = '' as ElementKey;
+		let name = nameOrElement as ElementKey;
 		let newEl: Partial<FormElement> | undefined;
 
 		if (
@@ -663,7 +668,8 @@ export function createController<
 		}
 
 		const conf = _elements[name];
-		const el = conf?.el;
+
+		const el = conf && conf.el;
 		const fs = _fieldState[name] || {};
 
 		let timeoutId: NodeJS.Timeout;
@@ -743,7 +749,8 @@ export function createController<
 	 */
 	function bind(...collection: FormElement[]) {
 		for (const el of collection) {
-			const isValid = TYPES.includes(el?.type);
+			if (!el) continue;
+			const isValid = TYPES.includes(el.type);
 			const isUnbound =
 				el.hasAttribute &&
 				el.hasAttribute(options.unboundAttribute || 'data-unbound');
@@ -816,10 +823,7 @@ export function createController<
 			// Setter determines how to set the value for element type,
 			// just pass key and any initial value.
 			if (typeof defaultValue !== 'undefined')
-				setValue(
-					key,
-					getProperty(options.initialValues, key as string) as FormElementValue
-				);
+				setValue(key, defaultValue as FormElementValue);
 
 			updateFieldState(key, {
 				pristine: true,

@@ -6,13 +6,12 @@ const commonjs = require('@rollup/plugin-commonjs');
 const peerDepsExternal = require("rollup-plugin-peer-deps-external");
 const { join } = require('path');
 
-const cwd = process.cwd();
-const pkg = require(join(cwd, 'package.json'));
+const pkg = require(join(__dirname, 'package.json'));
 
 /**
  * Comment with library information to be appended in the generated bundles.
  */
-const banner = `/*!
+const banner = `/**
  * ${pkg.name} v${pkg.version}
  * (c) ${pkg.author?.name || 'Blujedis'}
  * Released under the ${pkg.license || 'MIT'} License.
@@ -20,7 +19,7 @@ const banner = `/*!
 `;
 
 const common = {
-  banner,
+  // banner,
   name: pkg.name.charAt(0).toUpperCase() + pkg.name.slice(1),
   sourcemap: true,
   exports: 'named',
@@ -62,7 +61,8 @@ const options = {
       ...common,
       file: './dist/index.umd.js',
       format: 'umd',
-      globals: { react: 'React', 'react-dom': 'ReactDOM' }
+      globals: { react: 'React', 'react-dom': 'ReactDOM' },
+      name: 'Kensho'
     },
     {
       ...common,
@@ -70,6 +70,7 @@ const options = {
       format: 'umd',
       globals: { react: 'React', 'react-dom': 'ReactDOM' },
       plugins: [terser()],
+      name: 'Kensho'
     },
 
   ],

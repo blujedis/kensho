@@ -30,7 +30,7 @@
 	<Header />
 
 	<!-- Main Content -->
-	<main class="pt-24 overflow-y-auto w-full">
+	<main class="pt-24 pb-72 overflow-y-auto w-full">
 		<!-- Background Graphic -->
 		<div
 			class="hidden sm:block sm:absolute sm:inset-y-0 sm:h-full sm:w-full z-0"

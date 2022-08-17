@@ -1,11 +1,9 @@
 <script lang="ts">
 	import { page } from '$app/stores';
 	import Icon from '$lib/components/icon.svelte';
-	import Facebook from '$lib/icons/facebook.svg';
-	import Github from '$lib/icons/facebook.svg';
-	import Twitter from '$lib/icons/facebook.svg';
-	import Dribble from '$lib/icons/facebook.svg';
-	import Instagram from '$lib/icons/facebook.svg';
+	import Github from '$lib/icons/github.svg';
+	import Twitter from '$lib/icons/twitter.svg';
+	import Discord from '$lib/icons/discord.svg';
 	import routing from '$lib/utils/routing';
 
 	const routes = routing.getMenu('footer', true);
@@ -15,7 +13,7 @@
 	};
 </script>
 
-<footer class="bg-gray-100 dark:bg-gray-900">
+<footer class="bg-gray-100 dark:bg-gray-900 fixed bottom-0 w-full z-40">
 	<div class="mx-auto py-12 px-4 overflow-hidden sm:px-6 lg:px-8 ">
 		<nav class="-mx-5 -my-2 flex flex-wrap justify-center" aria-label="Footer">
 			{#each routes as route, i}
@@ -29,27 +27,6 @@
 
 		<div class="mt-8 flex justify-center space-x-6">
 			<a href="/" class="text-gray-400 hover:text-gray-500">
-				<span class="sr-only">Facebook</span>
-				<Icon>
-					<Facebook />
-				</Icon>
-			</a>
-
-			<a href="/" class="text-gray-400 hover:text-gray-500">
-				<span class="sr-only">Instagram</span>
-				<Icon>
-					<Instagram />
-				</Icon>
-			</a>
-
-			<a href="/" class="text-gray-400 hover:text-gray-500">
-				<span class="sr-only">Twitter</span>
-				<Icon>
-					<Twitter />
-				</Icon>
-			</a>
-
-			<a href="/" class="text-gray-400 hover:text-gray-500">
 				<span class="sr-only">GitHub</span>
 				<Icon>
 					<Github />
@@ -57,9 +34,16 @@
 			</a>
 
 			<a href="/" class="text-gray-400 hover:text-gray-500">
-				<span class="sr-only">Dribbble</span>
+				<span class="sr-only">Discord</span>
 				<Icon>
-					<Dribble />
+					<Discord />
+				</Icon>
+			</a>
+
+			<a href="/" class="text-gray-400 hover:text-gray-500">
+				<span class="sr-only">Twitter</span>
+				<Icon>
+					<Twitter />
 				</Icon>
 			</a>
 		</div>

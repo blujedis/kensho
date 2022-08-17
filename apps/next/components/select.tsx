@@ -1,5 +1,5 @@
 import { DetailedHTMLProps, FC, SelectHTMLAttributes } from "react";
-import { DataTypeConfig } from "@kensho/adapter-react";
+import type { DataTypeConfig } from "@kensho/adapter-react";
 
 type NativeSelectProps = DetailedHTMLProps<
   SelectHTMLAttributes<HTMLSelectElement>,
@@ -37,7 +37,7 @@ const Select: FC<InputProps> = (props) => {
     <div>
       {!label ? null : (
         <label
-          className="text-gray-700 text-sm block text-sm font-medium"
+          className="text-gray-700 text-sm block  font-medium"
           htmlFor={rest.name}
         >
           {capitalize(label as string)}

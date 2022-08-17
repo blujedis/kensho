@@ -12,7 +12,7 @@ const pkg = require(join(cwd, 'package.json'));
 /**
  * Comment with library information to be appended in the generated bundles.
  */
-const banner = `/*!
+const banner = `/**
  * ${pkg.name} v${pkg.version}
  * (c) ${pkg.author?.name || 'Blujedis'}
  * Released under the ${pkg.license || 'MIT'} License.
@@ -20,7 +20,7 @@ const banner = `/*!
 `;
 
 const common = {
-  banner,
+  // banner,
   name: pkg.name.charAt(0).toUpperCase() + pkg.name.slice(1),
   sourcemap: true,
   exports: 'named',

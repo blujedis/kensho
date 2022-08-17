@@ -14,7 +14,10 @@ const config = {
 			allowed: ['PATCH', 'DELETE']
 		},
 		vite: {
-			plugins: [svg()]
+			plugins: [svg()],
+			optimizeDeps: {
+				include: ['highlight.js', 'highlight.js/lib/core']
+			}
 		}
 	}
 };

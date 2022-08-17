@@ -2,7 +2,7 @@ import { type Writable, writable } from 'svelte/store';
 import createController, {
 	FormAdapterOptions,
 	FormElement,
-	getProperty,
+	helpers,
 	KeyOfAny,
 	Path,
 	SubscribeState
@@ -12,6 +12,8 @@ interface Store<T> {
 	subscribe: Writable<T>['subscribe'];
 	set: Writable<T>['set'];
 }
+
+const { getProperty } = helpers;
 
 function createStore<T>(def?: T): Store<T> {
 	const { subscribe, set } = writable(def);
@@ -27,7 +29,10 @@ function createStore<T>(def?: T): Store<T> {
  * @param el the current element to get default value for.
  * @param values the initial values provided in options.
  */
-const defaultGetter = <E extends FormElement, T extends Record<string, unknown>>(
+const defaultGetter = <
+	E extends FormElement,
+	T extends Record<string, unknown>
+>(
 	name: KeyOfAny<Path<T>>,
 	el: E,
 	values: T
@@ -55,8 +60,9 @@ export function useKensho<
 	const ctrl = createController({ ...options, adapter: 'svelte', defaultGetter });
 	const store = createStore({} as SubscribeState<T, F>);
 	ctrl.subscribe(store.set);
+	const { set, ..._store } = store;
 	return {
 		...ctrl,
-		store
+		store: _store
 	};
 }

@@ -108,3 +108,12 @@ export const prefersDarkMode = () => {
 	const isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
 	return isDark ? 'dark' : 'light';
 };
+
+export const escapeHtml = (unsafe: string) => {
+	return unsafe
+		.replaceAll('&', '&amp;')
+		.replaceAll('<', '&lt;')
+		.replaceAll('>', '&gt;')
+		.replaceAll('"', '&quot;')
+		.replaceAll("'", '&#039;');
+};

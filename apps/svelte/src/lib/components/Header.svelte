@@ -41,7 +41,7 @@
 
 <header
 	class="z-40 fixed top-0 border border-b-1 border-gray-200 dark:border-gray-900/50 shadow-sm shadow-gray-200 dark:shadow-slate-900/30 w-full bg-gray-100 dark:bg-gray-900 {menuOpen
-		? 'shadow-gray-300 shadow-gray-700'
+		? 'shadow-gray-300'
 		: ''}"
 >
 	<nav class="relative lg:hidden">

@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>My Website</title>
+  <link rel="icon" href="./favicon.ico" type="image/x-icon">
+  <script src="scripts/index.umd.js"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {}
+    };
+  </script>
+</head>
+
+<body>
+  <header>
+    <div class="mb-8">
+      <nav class="bg-white shadow dark:bg-gray-800">
+        <div class="container flex items-center justify-center p-6 mx-auto text-gray-600 capitalize dark:text-gray-300">
+          <a href="/"
+            class="hover:text-gray-800 transition-colors duration-200 transform dark:hover:text-gray-200 hover:border-indigo-500">Get
+            Started</a>
+        </div>
+      </nav>
+    </div>
+  </header>
+  <main>
+    <div class="p-8">
+      <form>
+        <div class="mb-4">
+          <label for="name" class="block">Name</label>
+          <input type="text" name="name" class="py-2 px-2 border border-1 border-gray-300" />
+        </div>
+        <div class="mb-4">
+          <label for="email" class="block">Email</label>
+          <input type="email" name="email" class="py-2 px-2 border border-1 border-gray-300" />
+        </div>
+        <div class="mt-8">
+          <button type="submit" class="py-2 px-4 border border-1 border-gray-300">Submit</button>
+        </div>
+        <p></p>
+      </form>
+    </div>
+
+  </main>
+  <script>
+    const form = document.querySelector('form');
+    const { register, store } = Kensho.useKensho({
+      initialValues: {
+        name: 'Milton Waddams',
+        email: 'milton@basement.com'
+      },
+      onSubmit(values) {
+        console.log('submitted', values);
+      }
+    });
+    register(document.querySelector('form'));
+    store.subscribe((values) => {
+
+    });
+  </script>
+</body>
+
+</html>

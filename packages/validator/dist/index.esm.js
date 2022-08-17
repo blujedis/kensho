@@ -1,9 +1,3 @@
-/*!
- * @kensho/validator v0.0.2
- * (c) Blujedi LLC
- * Released under the MIT License.
- */
-
 var commonjsGlobal = typeof globalThis !== 'undefined' ? globalThis : typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {};
 
 /**
